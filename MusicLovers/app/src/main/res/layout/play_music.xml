@@ -9,6 +9,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="10"
+    android:background="#FFF"
     android:orientation="vertical">
 
 //      **note: the id can be overlap
@@ -102,6 +103,8 @@
             <SeekBar
                 android:id="@+id/seekbarSong"
                 android:layout_weight="9"
+                android:thumbTint="@color/shiraz"
+                android:progressTint="@color/shiraz"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <TextView
@@ -160,6 +163,8 @@
             <SeekBar
                 android:id="@+id/seekbarVolume"
                 android:layout_weight="7"
+                android:progressTint="@color/shiraz"
+                android:thumbTint="@color/shiraz"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <ImageView
