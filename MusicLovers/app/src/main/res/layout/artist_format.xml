@@ -8,7 +8,7 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/profile_image"
+        android:id="@+id/artist_format_ArtistImg"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:src="@color/shiraz_variant"
@@ -16,6 +16,7 @@
         app:civ_border_color="#FF000000"/>
 
     <TextView
+        android:id="@+id/artist_format_ArtistName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Artist Name"

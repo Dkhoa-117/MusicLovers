@@ -16,21 +16,23 @@
             android:layout_margin="5dp">
 
             <ImageView
-                android:id="@+id/iv_song_format_SongImg"
+                android:id="@+id/song_format_SongImg"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
+                android:layout_marginStart="5dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:background="@drawable/background"
                 android:src="@drawable/ic_music" />
+
             <TextView
-                android:id="@+id/tv_song_format_SongName"
+                android:id="@+id/song_format_SongName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/iv_song_format_SongImg"
-                android:layout_toEndOf="@+id/iv_song_format_SongImg"
+                android:layout_alignTop="@+id/song_format_SongImg"
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="6dp"
+                android:layout_toEndOf="@+id/song_format_SongImg"
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:singleLine="true"
@@ -39,12 +41,12 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/tv_song_format_ArtistName"
+                android:id="@+id/song_format_ArtistName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/tv_song_format_SongName"
+                android:layout_below="@+id/song_format_SongName"
                 android:layout_marginStart="15dp"
-                android:layout_toEndOf="@+id/iv_song_format_SongImg"
+                android:layout_toEndOf="@+id/song_format_SongImg"
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:text="One Direction"

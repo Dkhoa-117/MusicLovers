@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="15dp"
+    android:layout_margin="10dp"
     android:orientation="vertical"
     android:gravity="left">
 
@@ -14,17 +14,19 @@
         android:src="@drawable/ic_music" />
     <TextView
         android:id="@+id/album_format_album_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="7dp"
-        android:maxLines="1"
+        android:ellipsize="marquee"
         android:text="Album Name"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:singleLine="true" />
     <TextView
         android:id="@+id/album_format_artist_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:ellipsize="marquee"
         android:paddingLeft="7dp"
-        android:maxLines="1"
-        android:text="Artist Name"/>
+        android:text="Artist Name"
+        android:singleLine="true" />
 </LinearLayout>
