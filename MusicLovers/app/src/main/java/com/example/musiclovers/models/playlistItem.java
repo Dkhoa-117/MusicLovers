@@ -4,8 +4,9 @@ public class playlistItem {
     private String _id;
     private String playlistName;
     private String userId;
+    private int playlist_number;
     private String playlistImg;
-    private String[] songs;
+    private String[] songId;
     private int numSongs;
 
     public String get_id() {
@@ -24,20 +25,20 @@ public class playlistItem {
         return playlistImg;
     }
 
-    public String[] getSongs() {
-        return songs;
+    public String[] getSongId() {
+        return songId;
     }
 
     public int getNumSongs() {
         return numSongs;
     }
 
-    public playlistItem(String _id, String playlistName, String userId, String playlistImg, String[] songs, int numSongs) {
+    public playlistItem(String _id, String playlistName, String userId, String playlistImg, String[] songId, int numSongs) {
         this._id = _id;
         this.playlistName = playlistName;
         this.userId = userId;
         this.playlistImg = playlistImg;
-        this.songs = songs;
+        this.songId = songId;
         this.numSongs = numSongs;
     }
 }

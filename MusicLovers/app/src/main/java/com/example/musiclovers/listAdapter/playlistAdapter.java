@@ -17,6 +17,7 @@ import com.example.musiclovers.DownloadImageTask;
 import com.example.musiclovers.MainActivity;
 import com.example.musiclovers.R;
 import com.example.musiclovers.ViewModel;
+import com.example.musiclovers.fragments.playlistDetailFragment;
 import com.example.musiclovers.fragments.playlistsFragment;
 import com.example.musiclovers.models.playlistItem;
 
@@ -51,7 +52,7 @@ public class playlistAdapter extends RecyclerView.Adapter<playlistAdapter.ViewHo
         String base_url = "http://10.0.2.2:3000/";
         new DownloadImageTask(holder.image).execute(base_url + currentPlaylist.getPlaylistImg());
         holder.image.setAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_transition_animation));
-        holder.numSongs.setText(currentPlaylist.getNumSongs());
+        holder.numSongs.setText(currentPlaylist.getNumSongs() + " Songs");
         holder.playlistName.setText(currentPlaylist.getPlaylistName());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,7 +60,7 @@ public class playlistAdapter extends RecyclerView.Adapter<playlistAdapter.ViewHo
                 viewModel = new ViewModelProvider((MainActivity)context).get(ViewModel.class);
                 viewModel.select(currentPlaylist);
                 ((FragmentActivity) view.getContext()).getSupportFragmentManager().beginTransaction()
-                        .add(R.id.fragment_container, new playlistsFragment())
+                        .add(R.id.fragment_container, new playlistDetailFragment())
                         .addToBackStack(null)
                         .setReorderingAllowed(true)
                         .commit();
@@ -79,9 +80,9 @@ public class playlistAdapter extends RecyclerView.Adapter<playlistAdapter.ViewHo
         ImageView image;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.playlistName = itemView.findViewById(tvName);
-            this.numSongs = itemView.findViewById(tvNumSongs);
-            this. image = itemView.findViewById(ivImage);
+            playlistName = itemView.findViewById(tvName);
+            numSongs = itemView.findViewById(tvNumSongs);
+            image = itemView.findViewById(ivImage);
         }
     }
 }

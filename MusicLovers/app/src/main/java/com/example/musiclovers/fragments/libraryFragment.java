@@ -9,13 +9,18 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.example.musiclovers.MainActivity;
 import com.example.musiclovers.PlaceHolder;
 import com.example.musiclovers.R;
+import com.example.musiclovers.ViewModel;
 import com.example.musiclovers.models.songItem;
 import com.example.musiclovers.listAdapter.songsListAdapter;
 
@@ -31,7 +36,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class libraryFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private songsListAdapter mAdapter;
-    private PlaceHolder placeHolder;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,6 +53,32 @@ public class libraryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //playlist
+        ConstraintLayout playlist = view.findViewById(R.id.fragment_library_Playlist);
+        playlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((FragmentActivity) view.getContext()).getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, new playlistsFragment())
+                        .addToBackStack(null)
+                        .setReorderingAllowed(true)
+                        .commit();
+            }
+        });
+
+        //artist
+        ConstraintLayout artist = view.findViewById(R.id.fragment_library_Artist);
+        artist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((FragmentActivity) view.getContext()).getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, new artistsFragment())
+                        .addToBackStack(null)
+                        .setReorderingAllowed(true)
+                        .commit();
+            }
+        });
+
         mRecyclerView = (RecyclerView)view.findViewById(R.id.fragment_library_AllSongs);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -58,7 +88,7 @@ public class libraryFragment extends Fragment {
                 .baseUrl(base_Url)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        placeHolder = retrofit.create(PlaceHolder.class);
+        PlaceHolder placeHolder = retrofit.create(PlaceHolder.class);
         Call<List<songItem>> call = placeHolder.getSongs();
         call.enqueue(new Callback<List<songItem>>() {
             @Override

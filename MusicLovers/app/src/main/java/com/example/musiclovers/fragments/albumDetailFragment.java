@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musiclovers.DownloadImageTask;
+import com.example.musiclovers.MainActivity;
 import com.example.musiclovers.PlaceHolder;
 import com.example.musiclovers.R;
 import com.example.musiclovers.ViewModel;
@@ -27,6 +28,7 @@ import com.example.musiclovers.listAdapter.songsListAdapter;
 import com.example.musiclovers.models.albumItem;
 import com.example.musiclovers.models.songItem;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +46,7 @@ public class albumDetailFragment extends Fragment {
     private PlaceHolder placeHolder;
     private ViewModel viewModel;
     private TextView artistName;
+    private ExtendedFloatingActionButton btnPlayAll;
     private CollapsingToolbarLayout collapsingToolbarLayout;
 
     @Override
@@ -59,6 +62,7 @@ public class albumDetailFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_album_detail, container, false);
         artistName = v.findViewById(R.id.fragment_album_detail_ArtistName);
+        btnPlayAll = v.findViewById(R.id.fragment_album_detail_PLayBtn);
         collapsingToolbarLayout = v.findViewById(R.id.fragment_album_detail_CollapsingToolbar);
         collapsingToolbarLayout.setCollapsedTitleTextColor(Color.WHITE);
         collapsingToolbarLayout.setExpandedTitleColor(Color.WHITE);
@@ -105,8 +109,14 @@ public class albumDetailFragment extends Fragment {
                             songItems,
                             getContext());
                     mRecyclerView.setAdapter(mAdapter);
-                }
 
+                    btnPlayAll.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ((MainActivity)getActivity()).getSongs(songItems, 0);
+                        }
+                    });
+                }
                 @Override
                 public void onFailure(@NonNull Call<List<songItem>> call, Throwable t) {
                     Toast.makeText(getContext(), "error", Toast.LENGTH_LONG).show();
