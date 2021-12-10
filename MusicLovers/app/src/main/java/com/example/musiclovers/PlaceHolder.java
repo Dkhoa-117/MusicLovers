@@ -1,7 +1,5 @@
 package com.example.musiclovers;
 
-import android.os.Build;
-
 import com.example.musiclovers.models.albumItem;
 import com.example.musiclovers.models.artistItem;
 import com.example.musiclovers.models.playlistItem;
@@ -11,16 +9,16 @@ import com.example.musiclovers.models.userItem;
 import java.util.List;
 
 import retrofit2.Call;
-import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-
+/**
+ * DONE
+ */
 public interface PlaceHolder {
     // 👇 GET 👇
     @GET("songs")
@@ -54,7 +52,7 @@ public interface PlaceHolder {
     Call<List<playlistItem>> getPlaylistsByUser (@Path("userId") String userId);
 
     @GET("playlists/{userId}/{playlist_number}")
-    Call<playlistItem> getSpecificPlaylistByUser (@Path("userId") String userId, @Path("playlist_number") int playlist_number);
+    Call<List<playlistItem>> getPlaylistByUser_PlaylistNum(@Path("userId") String userId, @Path("playlist_number") int playlist_number);
 
     @GET("artists")
     Call<List<artistItem>> getArtists();
@@ -64,6 +62,12 @@ public interface PlaceHolder {
 
     @GET("songs/search")
     Call<List<songItem>> searchSongs (@Query("q") String q);
+
+    @GET("albums/search")
+    Call<List<albumItem>> searchAlbums (@Query("q") String q);
+
+    @GET("artists/search")
+    Call<List<artistItem>> searchArtists (@Query("q") String q);
 
     // 👇 PATCH 👇
 
@@ -84,8 +88,15 @@ public interface PlaceHolder {
     );
 
     @FormUrlEncoded
+    @POST("playlists/")
+    Call<playlistItem> createPlaylist(
+            @Field("playlistName") String playlistName,
+            @Field("userId") String userId
+    );
+
+    @FormUrlEncoded
     @POST("playlists/{playlistId}/songs")
-    Call<Void> addSongInPlaylist(
+    Call<Void> addSongToPlaylist(
             @Path("playlistId") String playlistId,
             @Field("songId") String songId
     );
@@ -98,9 +109,14 @@ public interface PlaceHolder {
     );
 
     // 👇 DELETE 👇
-    @DELETE("playlist/{playlistId}/songs/{songId}")
+    @DELETE("playlists/{playlistId}/songs/{songId}")
     Call<Void> removeSongInPlaylist(
             @Path("playlistId") String playlistId,
             @Path("songId") String songId
+    );
+
+    @DELETE("playlists/{playlistId}")
+    Call<Void> deletePlaylist(
+            @Path("playlistId") String playlistId
     );
 }

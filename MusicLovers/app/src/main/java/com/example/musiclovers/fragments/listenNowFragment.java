@@ -23,6 +23,9 @@ import com.example.musiclovers.signIn_signUpActivity.SaveSharedPreference;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/**
+ * DONE
+ */
 public class listenNowFragment extends Fragment {
     CircleImageView CImgProfile;
     Dialog dialog;

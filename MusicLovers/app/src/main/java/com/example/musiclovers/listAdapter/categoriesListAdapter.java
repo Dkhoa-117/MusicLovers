@@ -25,6 +25,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * DONE
+ */
 public class categoriesListAdapter extends RecyclerView.Adapter<categoriesListAdapter.ViewHolder> {
     ArrayList<String> categories;
     Context context;
@@ -72,6 +75,7 @@ public class categoriesListAdapter extends RecyclerView.Adapter<categoriesListAd
                             R.id.album_format_artist_name,
                             R.id.album_format_image,
                             songItems,
+                            3, /* add song to playing next & playlist AVAILABLE */
                             context);
                     holder.childRecyclerView.setAdapter(mAdapter);
                 }

@@ -8,6 +8,9 @@ import android.widget.ImageView;
 import java.io.InputStream;
 import java.net.URL;
 
+/**
+ * DONE
+ */
 //Download the image to display in the play_music, Do the AsyncTask to avoid NetworkOnMainThreadException
 public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
     ImageView imageView;

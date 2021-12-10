@@ -33,6 +33,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * DONE
+ */
 public class libraryFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private songsListAdapter mAdapter;
@@ -105,6 +108,7 @@ public class libraryFragment extends Fragment {
                         R.id.song_format_ArtistName,
                         R.id.song_format_SongImg,
                         songItems,
+                        3, /* add song to playing next & playlist AVAILABLE - might be something else*/
                         getContext());
                 mRecyclerView.setAdapter(mAdapter);
             }

@@ -22,7 +22,9 @@ import com.example.musiclovers.models.artistItem;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
+/**
+ * DONE
+ */
 public class artistsAdapter extends RecyclerView.Adapter<artistsAdapter.ViewHolder> {
     private int layoutHolder, tvName, CImage;
     private ArrayList<artistItem> artistItems;

@@ -21,6 +21,9 @@ import com.example.musiclovers.models.albumItem;
 
 import java.util.ArrayList;
 
+/**DONE
+ *
+ */
 public class albumsListAdapter extends RecyclerView.Adapter<albumsListAdapter.ViewHolder> {
 
     private int layoutHolder, tvName, tvArtist, ivImage;

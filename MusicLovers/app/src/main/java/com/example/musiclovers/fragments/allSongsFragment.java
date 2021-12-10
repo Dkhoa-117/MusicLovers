@@ -47,6 +47,7 @@ public class allSongsFragment extends Fragment {
                 R.id.song_format_ArtistName,
                 R.id.song_format_SongImg,
                 songItems,
+                3, /* add song to playing next & playlist AVAILABLE */
                 getContext()
         );
         songsRecyclerView.setAdapter(songsListAdapter);

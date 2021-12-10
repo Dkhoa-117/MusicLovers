@@ -18,6 +18,9 @@ import com.example.musiclovers.listAdapter.categoriesListAdapter;
 
 import java.util.ArrayList;
 
+/**
+ * DONE
+ */
 public class browseFragment extends Fragment {
     RecyclerView.LayoutManager parentLayoutManager;
     ArrayList<String> categories = new ArrayList<>();

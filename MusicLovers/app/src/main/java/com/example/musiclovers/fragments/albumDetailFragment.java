@@ -40,6 +40,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * DONE
+ */
 public class albumDetailFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private songsListAdapter mAdapter;
@@ -53,8 +56,8 @@ public class albumDetailFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        TransitionInflater inflater = TransitionInflater.from(requireContext());
-        setExitTransition(inflater.inflateTransition(R.transition.fade));
+        //TransitionInflater inflater = TransitionInflater.from(requireContext());
+        //setExitTransition(inflater.inflateTransition(R.transition.fade));
     }
 
     @Nullable
@@ -107,15 +110,11 @@ public class albumDetailFragment extends Fragment {
                             R.id.song_format_ArtistName,
                             R.id.song_format_SongImg,
                             songItems,
+                            3, /* add song to playing next & playlist AVAILABLE */
                             getContext());
                     mRecyclerView.setAdapter(mAdapter);
 
-                    btnPlayAll.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            ((MainActivity)getActivity()).getSongs(songItems, 0);
-                        }
-                    });
+                    btnPlayAll.setOnClickListener(view1 -> ((MainActivity)getActivity()).getSongs(songItems, 0));
                 }
                 @Override
                 public void onFailure(@NonNull Call<List<songItem>> call, Throwable t) {

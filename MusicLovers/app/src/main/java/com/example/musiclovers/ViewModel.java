@@ -7,6 +7,9 @@ import com.example.musiclovers.models.albumItem;
 import com.example.musiclovers.models.artistItem;
 import com.example.musiclovers.models.playlistItem;
 
+/**
+ * DONE
+ */
 public class ViewModel extends androidx.lifecycle.ViewModel {
     // TODO: Implement the ViewModel -> communicate between fragments
     //ALBUM______________

@@ -49,8 +49,20 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fragment_search_SearchView"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout"
         android:visibility="gone"/>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabTextColor="#524D50"
+        app:tabSelectedTextColor="@color/shiraz"
+        app:tabGravity="fill"
+        app:tabMode="fixed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_search_SearchView" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/fragment_search_SearchRecycleView"
@@ -58,7 +70,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_thumbnail"
-        tools:listitem="@layout/song_format"/>
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout"
+        tools:listitem="@layout/song_format" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
