@@ -15,10 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musiclovers.PlaceHolder;
 import com.example.musiclovers.R;
-import com.example.musiclovers.listAdapter.artistsAdapter;
-import com.example.musiclovers.listAdapter.playlistAdapter;
-import com.example.musiclovers.models.artistItem;
-import com.example.musiclovers.models.playlistItem;
+import com.example.musiclovers.listAdapter.genresAdapter;
+import com.example.musiclovers.models.genreItem;
 import com.example.musiclovers.signIn_signUpActivity.SaveSharedPreference;
 
 import java.util.ArrayList;
@@ -30,14 +28,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * DONE
- */
-public class artistsFragment extends Fragment {
+public class genresFragment extends Fragment {
 
-    ArrayList<artistItem> artistItems = new ArrayList<>();
+    ArrayList<genreItem> genres = new ArrayList<>();
     PlaceHolder placeHolder;
-    artistsAdapter artistAdapter;
+    genresAdapter genreAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,7 +44,7 @@ public class artistsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_artists, container, false);
+        return inflater.inflate(R.layout.fragment_genres, container, false);
     }
 
     @Override
@@ -61,39 +56,30 @@ public class artistsFragment extends Fragment {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         placeHolder = retrofit.create(PlaceHolder.class);
-        Call<List<artistItem>> call = placeHolder.getArtistsByUser(SaveSharedPreference.getId(getContext()));
-        call.enqueue(new Callback<List<artistItem>>() {
+        Call<List<genreItem>> call = placeHolder.getGenres();
+        call.enqueue(new Callback<List<genreItem>>() {
             @Override
-            public void onResponse(Call<List<artistItem>> call, Response<List<artistItem>> response) {
+            public void onResponse(Call<List<genreItem>> call, Response<List<genreItem>> response) {
                 if(!response.isSuccessful()){
                     Toast.makeText(getContext(), "code: "+ response.code(), Toast.LENGTH_SHORT).show();
                     return;
                 }
-                artistItems = (ArrayList<artistItem>) response.body();
-                RecyclerView artistRecyclerView = view.findViewById(R.id.fragment_artists_RecyclerView);
-                artistRecyclerView.setHasFixedSize(true);
-                artistRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                artistAdapter = new artistsAdapter(
-                        R.layout.artist_format,
-                        R.id.artist_format_ArtistName,
-                        R.id.artist_format_ArtistImg,
-                        artistItems,
-                        getContext()
-                );
-                artistRecyclerView.setAdapter(artistAdapter);
+                genres = (ArrayList<genreItem>) response.body();
+                RecyclerView genresRecyclerView = view.findViewById(R.id.fragment_genres_RecyclerView);
+                genresRecyclerView.setHasFixedSize(true);
+                genresRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                genreAdapter = new genresAdapter(
+                        R.layout.genre_format,
+                        R.id.genre_name,
+                        genres,
+                        getContext());
+                genresRecyclerView.setAdapter(genreAdapter);
             }
 
             @Override
-            public void onFailure(Call<List<artistItem>> call, Throwable t) {
-                Toast.makeText(getContext(), "error", Toast.LENGTH_LONG);
+            public void onFailure(Call<List<genreItem>> call, Throwable t) {
+                Toast.makeText(getContext(), "message: "+ t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if(artistAdapter != null)
-            artistAdapter.notifyDataSetChanged();
     }
 }

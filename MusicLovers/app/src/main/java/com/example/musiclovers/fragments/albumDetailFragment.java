@@ -56,8 +56,8 @@ public class albumDetailFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //TransitionInflater inflater = TransitionInflater.from(requireContext());
-        //setExitTransition(inflater.inflateTransition(R.transition.fade));
+        TransitionInflater inflater = TransitionInflater.from(requireContext());
+        setExitTransition(inflater.inflateTransition(R.transition.fade));
     }
 
     @Nullable

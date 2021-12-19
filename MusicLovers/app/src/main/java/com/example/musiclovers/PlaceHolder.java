@@ -2,6 +2,7 @@ package com.example.musiclovers;
 
 import com.example.musiclovers.models.albumItem;
 import com.example.musiclovers.models.artistItem;
+import com.example.musiclovers.models.genreItem;
 import com.example.musiclovers.models.playlistItem;
 import com.example.musiclovers.models.songItem;
 import com.example.musiclovers.models.userItem;
@@ -39,6 +40,12 @@ public interface PlaceHolder {
     @GET("songs/album/{albumId}")
     Call<List<songItem>> getSongsByAlbum (@Path("albumId") String albumId);
 
+    @GET("songs/category/{category}")
+    Call<List<songItem>> getSongsByCategory (@Path("category") String category); //new-music * best-new-songs *
+
+    @GET("albums/category/{category}")
+    Call<List<albumItem>> getAlbumsByCategory (@Path("category") String category); //new-albums * hot-albums *
+
     @GET("songs/artist/{artistId}")
     Call<List<songItem>> getSongsByArtist (@Path("artistId") String artistId);
 
@@ -54,11 +61,26 @@ public interface PlaceHolder {
     @GET("playlists/{userId}/{playlist_number}")
     Call<List<playlistItem>> getPlaylistByUser_PlaylistNum(@Path("userId") String userId, @Path("playlist_number") int playlist_number);
 
-    @GET("artists")
-    Call<List<artistItem>> getArtists();
+    @GET("artists/user/{userId}")
+    Call<List<artistItem>> getArtistsByUser(
+            @Path("userId") String userId
+    );
 
-    @GET("artists/{artistId}")
-    Call<artistItem> getArtist(@Path("artistId") String artistId);
+    @GET("artists/{userId}/{artistId}")
+    Call<artistItem> getArtist(
+            @Path("artistId") String artistId,
+            @Path("userId") String userId
+    );
+
+    @GET("genres/{genreId}/{userId}")//localhost:3000/genres/6162bbec9298eb65df91223c/61bdc8c9ad3e90d33849dee9___________:genreId/:userId'
+    Call<List<songItem>> getUserGenres(
+            @Path("genreId") String genreId,
+            @Path("userId") String userId
+
+    );
+
+    @GET("genres")
+    Call<List<genreItem>> getGenres();
 
     @GET("songs/search")
     Call<List<songItem>> searchSongs (@Query("q") String q);
@@ -104,6 +126,20 @@ public interface PlaceHolder {
     @FormUrlEncoded
     @POST("songs/likes")
     Call<Void> likeSong(
+            @Field("userId") String userId,
+            @Field("songId") String songId
+    );
+
+    @FormUrlEncoded
+    @POST("artists/likes")
+    Call<Void> likeArtist(
+            @Field("userId") String userId,
+            @Field("artistId") String artistId
+    );
+
+    @FormUrlEncoded
+    @POST("songs/recent")
+    Call<Void> addSong2RecentList(
             @Field("userId") String userId,
             @Field("songId") String songId
     );

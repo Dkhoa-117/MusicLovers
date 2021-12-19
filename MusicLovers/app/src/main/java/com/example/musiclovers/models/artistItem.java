@@ -5,6 +5,11 @@ public class artistItem {
     private String artistName;
     private String description;
     private String artistImg;
+    private boolean liked;
+
+    public boolean isLiked() {
+        return liked;
+    }
 
     public String get_id() {
         return _id;
@@ -38,10 +43,11 @@ public class artistItem {
         this.artistImg = artistImg;
     }
 
-    public artistItem(String _id, String artistName, String description, String artistImg) {
+    public artistItem(String _id, String artistName, String description, String artistImg, boolean loved) {
         this._id = _id;
         this.artistName = artistName;
         this.description = description;
         this.artistImg = artistImg;
+        //this.loved = loved;
     }
 }

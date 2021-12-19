@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.musiclovers.models.albumItem;
 import com.example.musiclovers.models.artistItem;
+import com.example.musiclovers.models.genreItem;
 import com.example.musiclovers.models.playlistItem;
 
 /**
@@ -37,5 +38,14 @@ public class ViewModel extends androidx.lifecycle.ViewModel {
     }
     public LiveData<artistItem> getSelectedArtist() {
         return selectedArtist;
+    }
+
+    //GENRE______________
+    private final MutableLiveData<genreItem> selectedGenre = new MutableLiveData<genreItem>();
+    public void select(genreItem genreItem) {
+        selectedGenre.setValue(genreItem);
+    }
+    public LiveData<genreItem> getSelectedGenre() {
+        return selectedGenre;
     }
 }

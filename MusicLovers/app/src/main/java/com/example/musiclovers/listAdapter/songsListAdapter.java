@@ -2,6 +2,7 @@ package com.example.musiclovers.listAdapter;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -78,7 +79,7 @@ public class songsListAdapter extends RecyclerView.Adapter<songsListAdapter.View
          * ------------------
          * REMOVE_PLAYLIST = 1
          * REMOVE_PLAYING_NEXT = 2
-         * ADD2PLAYING_NEXT / ADD2PLAYLIST = 3 (let user choose what they want)
+         * ADD2PLAYING_NEXT / ADD2PLAYLIST / LIKE / GO TO ARTIST = 3 (let user choose what they want)
          */
         holder.itemView.setOnLongClickListener(view -> {
             if(clickMode == 1){
@@ -95,16 +96,22 @@ public class songsListAdapter extends RecyclerView.Adapter<songsListAdapter.View
                 notifyItemRemoved(position);
                 notifyItemRangeChanged(position, songItems.size());
             }else if(clickMode == 3){
-                PopupMenu popup = new PopupMenu(context, view);
+                PopupMenu popup = new PopupMenu(context, view, Gravity.END);
                 popup.getMenuInflater().inflate(R.menu.long_click_song_option_menu, popup.getMenu());
                 popup.setOnMenuItemClickListener(item -> {
-                    if(item.getItemId() == R.id.add_to_playlist_songItem){
+                    if(item.getItemId() == R.id.song_opt_add_to_playlist){
                         ((MainActivity) context).addSongToPlaylist(songItems.get(position));
-                    }else if(item.getItemId() == R.id.play_next){
+                    }else if(item.getItemId() == R.id.song_opt_play_next){
                         ((MainActivity) context).songList.add(songItems.get(position));
                         ((playingNextFragment) MainActivity.playingNext).nextSongs.add(songItems.get(position));
                         ((playingNextFragment) MainActivity.playingNext).adapter.notifyDataSetChanged();
                         Toast.makeText(context, "Add Song To Playing Next", Toast.LENGTH_SHORT).show();
+                    }else if(item.getItemId() == R.id.song_opt_like){
+                        ((MainActivity) context).loveMeOrNot(songItems.get(position));
+                    }else if(item.getItemId() == R.id.song_opt_go_to_artist){
+                        ((MainActivity) context).goToArtistDetail(songItems.get(position));
+                    }else if(item.getItemId() == R.id.song_opt_go_to_album){
+                        ((MainActivity) context).goToAlbumDetail(songItems.get(position));
                     }
                     return true;
                 });

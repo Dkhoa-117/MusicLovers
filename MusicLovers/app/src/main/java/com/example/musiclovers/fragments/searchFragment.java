@@ -50,7 +50,7 @@ public class searchFragment extends Fragment {
     TabLayout tabBar;
     Retrofit retrofit;
     PlaceHolder placeHolder;
-    String searchString;
+    String searchString = "";
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -125,19 +125,19 @@ public class searchFragment extends Fragment {
                 if(tab == tabSongs){
                     if(!songItems.isEmpty()){
                         recyclerView.setAdapter(songsAdapter);
-                    }else{
+                    }else if (!searchString.isEmpty()){
                         searchSongs(searchString);
                     }
                 }else if(tab == tabAlbums){
                     if(!albumItems.isEmpty()){
                         recyclerView.setAdapter(albumsAdapter);
-                    }else{
+                    }else if(!searchString.isEmpty()){
                         searchAlbums(searchString);
                     }
                 }else if(tab == tabArtists){
                     if(!artistItems.isEmpty()){
                         recyclerView.setAdapter(artistsAdapter);
-                    }else{
+                    }else if(!searchString.isEmpty()){
                         searchArtists(searchString);
                     }
                 }

@@ -33,6 +33,7 @@ import com.example.musiclovers.ViewModel;
 import com.example.musiclovers.listAdapter.playlistAdapter;
 import com.example.musiclovers.models.playlistItem;
 import com.example.musiclovers.signIn_signUpActivity.SaveSharedPreference;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +51,6 @@ public class playlistsFragment extends Fragment {
 
     public ArrayList<playlistItem> playlistItems = new ArrayList<>();
     PlaceHolder placeHolder;
-    ConstraintLayout createNewPlaylist;
     playlistAdapter adapter;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -137,8 +137,8 @@ public class playlistsFragment extends Fragment {
                 Toast.makeText(getContext(), "error", Toast.LENGTH_LONG).show();
             }
         });
-        createNewPlaylist = view.findViewById(R.id.addNewPlayList);
-        createNewPlaylist.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton btnCreateNewPlaylist = view.findViewById(R.id.fragment_playlists_CreateNewPlaylist);
+        btnCreateNewPlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Dialog dialog = new Dialog(getContext());

@@ -8,4 +8,5 @@ public interface Playable {
     void onSongPlay();
     void onSongPause();
     void onSongNext();
+    void onLikeSong();
 }

@@ -212,34 +212,32 @@ public class MainActivity extends AppCompatActivity implements Playable{
     }
 
     public void goToAlbumDetail(songItem songItem) {
-        Call<albumItem> call = placeHolder.getAlbum(songItem.getAlbumId());
-        call.enqueue(new Callback<albumItem>() {
+        Call<albumItem> call1 = placeHolder.getAlbum(songItem.getAlbumId());
+        call1.enqueue(new Callback<albumItem>() {
             @Override
             public void onResponse(@NonNull Call<albumItem> call, @NonNull Response<albumItem> response) {
-                if (!response.isSuccessful()) {
-                    Toast.makeText(getApplicationContext(), "code: " + response.code(), Toast.LENGTH_SHORT).show();
-                    return;
+                if (response.isSuccessful()) {
+                    albumItem album = response.body();
+                    ViewModel viewModel = new ViewModelProvider(MainActivity.this).get(ViewModel.class);
+                    viewModel.select(album);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, new albumDetailFragment())
+                            .addToBackStack(null)
+                            .setReorderingAllowed(true)
+                            .commit();
                 }
-                albumItem album = response.body();
-                ViewModel viewModel = new ViewModelProvider(MainActivity.this).get(ViewModel.class);
-                viewModel.select(album);
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, new albumDetailFragment())
-                        .addToBackStack(null)
-                        .setReorderingAllowed(true)
-                        .commit();
             }
 
             @Override
             public void onFailure(@NonNull Call<albumItem> call, @NonNull Throwable t) {
-                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
     public void goToArtistDetail(songItem songItem){
         String[] artistId = songItem.getArtistId();
-        Call<artistItem> call = placeHolder.getArtist(artistId[0]);
+        Call<artistItem> call = placeHolder.getArtist(artistId[0], SaveSharedPreference.getId(this));
         call.enqueue(new Callback<artistItem>() {
             @Override
             public void onResponse(@NonNull Call<artistItem> call, @NonNull Response<artistItem> response) {
@@ -346,9 +344,12 @@ public class MainActivity extends AppCompatActivity implements Playable{
                             addSongToPlaylist.enqueue(new Callback<Void>() {
                                 @Override
                                 public void onResponse(Call<Void> call, Response<Void> response) {
-                                    if(response.isSuccessful()){
+                                    if(response.code() == 200){
                                         Toast.makeText(MainActivity.this, "Song added !!", Toast.LENGTH_LONG).show();
-                                    }else{
+                                    }else if(response.code() == 201){
+                                        Toast.makeText(MainActivity.this, "Song is Already in the Playlist !!", Toast.LENGTH_LONG).show();
+                                    }
+                                    else{
                                         Toast.makeText(MainActivity.this, "Sorry \n Something went wrong", Toast.LENGTH_LONG).show();
                                     }
                                 }
@@ -456,6 +457,7 @@ public class MainActivity extends AppCompatActivity implements Playable{
             mediaPlayer.setDataSource(base_Url + song.getSongSrc());
             mediaPlayer.prepare();
             mediaPlayer.start();
+            recentlyPlayed(song.get_id());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -472,6 +474,23 @@ public class MainActivity extends AppCompatActivity implements Playable{
 
         handler.postDelayed(playingOrder, 1000);
         song_tab_btnPause_Start.setImageResource(R.drawable.ic_pause);
+    }
+
+    void recentlyPlayed(String songId){
+        Call<Void> call = placeHolder.addSong2RecentList(SaveSharedPreference.getId(this), songId);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if(!response.isSuccessful()){
+                    Toast.makeText(MainActivity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void songPlayback() {
@@ -575,12 +594,12 @@ public class MainActivity extends AppCompatActivity implements Playable{
         public void onReceive(Context context, Intent intent) {
             String action = intent.getExtras().getString("actionname");
 
-            switch (action){
+            switch (action) {
                 case createNotification.ACTION_PREVIOUS:
                     onSongPrevious();
                     break;
                 case createNotification.ACTION_PLAY:
-                    if (mediaPlayer.isPlaying()){
+                    if (mediaPlayer.isPlaying()) {
                         onSongPause();
                     } else {
                         onSongPlay();
@@ -588,6 +607,9 @@ public class MainActivity extends AppCompatActivity implements Playable{
                     break;
                 case createNotification.ACTION_NEXT:
                     onSongNext();
+                    break;
+                case createNotification.ACTION_LIKE:
+                    onLikeSong();
                     break;
             }
         }
@@ -660,6 +682,11 @@ public class MainActivity extends AppCompatActivity implements Playable{
             position++;
             prepareSongAndPlay();
         }
+    }
+
+    @Override
+    public void onLikeSong() {
+        loveMeOrNot(songList.get(position));
     }
 
     private void timerSetting() {

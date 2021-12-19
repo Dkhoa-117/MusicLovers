@@ -27,14 +27,13 @@ import java.util.Collections;
  */
 public class playingNextFragment extends Fragment implements MainActivity.UpdateFragmentPlayingNext {
     RecyclerView recyclerView;
-    public songsListAdapter adapter;
     ImageButton btnShuffle;
     ImageButton btnRepeat;
     TextView tvNoSongPlayingNext;
     public ArrayList<songItem> nextSongs = new ArrayList<>();
-    boolean isShuffle, isRepeat;
+    boolean isShuffle;
     ArrayList<songItem> tempSongArray = new ArrayList<>();
-
+    public songsListAdapter adapter;
 
     @Nullable
     @Override
@@ -51,6 +50,7 @@ public class playingNextFragment extends Fragment implements MainActivity.Update
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        init();
         //BUTTON LISTENER
         btnRepeat.setOnClickListener(view1 -> {
             if(((MainActivity) getContext()).isRepeat){
@@ -115,7 +115,7 @@ public class playingNextFragment extends Fragment implements MainActivity.Update
             tempSongArray.addAll(((MainActivity) getContext()).songList);
             Collections.shuffle(((MainActivity) getContext()).songList);
         }
-        nextSongs = new ArrayList<>();
+        nextSongs.clear();
         nextSongs.addAll( ((MainActivity) getContext()).songList);
         nextSongs.remove(0);
 
@@ -123,15 +123,6 @@ public class playingNextFragment extends Fragment implements MainActivity.Update
             tvNoSongPlayingNext.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
         }else{
-            adapter = new songsListAdapter(
-                    R.layout.song_format,
-                    R.id.song_format_SongName,
-                    R.id.song_format_ArtistName,
-                    R.id.song_format_SongImg,
-                    nextSongs,
-                    2, /* remove from playing next */
-                    getContext()
-            );
             recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             recyclerView.setAdapter(adapter);
@@ -148,5 +139,17 @@ public class playingNextFragment extends Fragment implements MainActivity.Update
             }
             adapter.notifyDataSetChanged();
         }
+    }
+
+    void init(){
+        adapter  = new songsListAdapter(
+                R.layout.song_format,
+                R.id.song_format_SongName,
+                R.id.song_format_ArtistName,
+                R.id.song_format_SongImg,
+                nextSongs,
+                2, /* remove from playing next */
+                getContext()
+        );
     }
 }

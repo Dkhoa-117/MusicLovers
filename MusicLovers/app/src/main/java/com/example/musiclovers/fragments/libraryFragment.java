@@ -21,8 +21,10 @@ import com.example.musiclovers.MainActivity;
 import com.example.musiclovers.PlaceHolder;
 import com.example.musiclovers.R;
 import com.example.musiclovers.ViewModel;
+import com.example.musiclovers.models.playlistItem;
 import com.example.musiclovers.models.songItem;
 import com.example.musiclovers.listAdapter.songsListAdapter;
+import com.example.musiclovers.signIn_signUpActivity.SaveSharedPreference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +84,19 @@ public class libraryFragment extends Fragment {
             }
         });
 
+        //genre
+        ConstraintLayout genre = view.findViewById(R.id.fragment_library_Genre);
+        genre.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((FragmentActivity) view.getContext()).getSupportFragmentManager().beginTransaction()
+                        .add(R.id.fragment_container, new genresFragment())
+                        .addToBackStack(null)
+                        .setReorderingAllowed(true)
+                        .commit();
+            }
+        });
+
         mRecyclerView = (RecyclerView)view.findViewById(R.id.fragment_library_AllSongs);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -92,32 +107,46 @@ public class libraryFragment extends Fragment {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         PlaceHolder placeHolder = retrofit.create(PlaceHolder.class);
-        Call<List<songItem>> call = placeHolder.getSongs();
-        call.enqueue(new Callback<List<songItem>>() {
+        Call<List<playlistItem>> call = placeHolder.getPlaylistByUser_PlaylistNum(SaveSharedPreference.getId(getContext()), 0);
+        call.enqueue(new Callback<List<playlistItem>>() {
             @Override
-            public void onResponse(Call<List<songItem>> call, Response<List<songItem>> response) {
-                if(!response.isSuccessful()) {
-                    Toast.makeText(getContext(), "code: "+ response.code(), Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                ArrayList<songItem> songItems = (ArrayList<songItem>) response.body();
+            public void onResponse(Call<List<playlistItem>> call, Response<List<playlistItem>> response) {
+                if(response.isSuccessful()){
+                    ArrayList<playlistItem> playlists = (ArrayList<playlistItem>) response.body();
+                    Call<List<songItem>> call1 = placeHolder.getSongsByPlaylist(playlists.get(0).get_id());
+                    call1.enqueue(new Callback<List<songItem>>() {
+                        @Override
+                        public void onResponse(@NonNull Call<List<songItem>> call, @NonNull Response<List<songItem>> response) {
+                            if (!response.isSuccessful()) {
+                                Toast.makeText(getContext(), "code: " + response.code(), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            ArrayList<songItem> songItems = (ArrayList<songItem>) response.body();
+                            mAdapter = new songsListAdapter(
+                                    R.layout.song_format,
+                                    R.id.song_format_SongName,
+                                    R.id.song_format_ArtistName,
+                                    R.id.song_format_SongImg,
+                                    songItems,
+                                    3,
+                                    getContext());
+                            mRecyclerView.setAdapter(mAdapter);
+                        }
 
-                mAdapter = new songsListAdapter(
-                        R.layout.song_format,
-                        R.id.song_format_SongName,
-                        R.id.song_format_ArtistName,
-                        R.id.song_format_SongImg,
-                        songItems,
-                        3, /* add song to playing next & playlist AVAILABLE - might be something else*/
-                        getContext());
-                mRecyclerView.setAdapter(mAdapter);
+                        @Override
+                        public void onFailure(@NonNull Call<List<songItem>> call, Throwable t) {
+                            Toast.makeText(getContext(), "error", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }else{
+                    Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
-            public void onFailure(Call<List<songItem>> call, Throwable t) {
-                Toast.makeText(getContext(), "error", Toast.LENGTH_LONG);
+            public void onFailure(Call<List<playlistItem>> call, Throwable t) {
+                Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 }
