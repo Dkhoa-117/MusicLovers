@@ -15,10 +15,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -57,12 +61,14 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import wseemann.media.FFmpegMediaMetadataRetriever;
 
 public class MainActivity extends AppCompatActivity implements Playable{
     /* Declare */
@@ -79,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements Playable{
     NotificationManager manager;
     public AudioManager audioManager;
     public boolean isRepeat = false;
+    public Bitmap bmOnPlayingSong;
 
     //interface - using to update fragment
     public static UpdateFragmentPlayMusic updateFragmentPlayMusic;
@@ -439,9 +446,7 @@ public class MainActivity extends AppCompatActivity implements Playable{
         songItem song = songList.get(position);
         song_tab_SongName.setText(song.getSongName() + " - " + song.getArtistName());
         song_tab_SongName.setSelected(true);
-        updateFragmentPlayMusic.updateSong(song.getSongName(), song.getArtistName(), song.getSongImg());
         updateFragmentPlayMusic.updateBtnPlay(R.drawable.ic_pause);
-        new DownloadImageTask(song_tab_SongImg).execute(base_Url + song.getSongImg());
 
         if(mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();
@@ -450,15 +455,31 @@ public class MainActivity extends AppCompatActivity implements Playable{
             mediaPlayer.reset();
         }
         try {
+            if(song.get_id() == null){ //offline
+                mediaPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse(song.getSongSrc()));
+                FFmpegMediaMetadataRetriever retriever = new FFmpegMediaMetadataRetriever();
+                retriever.setDataSource(song.getSongImg());
+                byte [] data = retriever.getEmbeddedPicture();
+                if (data != null){
+                    bmOnPlayingSong = BitmapFactory.decodeByteArray(data, 0, data.length);
+                }else{ //.mp3 file doesn't have meta data like image, i.e
+                    bmOnPlayingSong = BitmapFactory.decodeResource(getResources(), R.drawable.ic_music); //it not working
+                }
+                retriever.release();
+                song_tab_SongImg.setImageBitmap(bmOnPlayingSong);
+            }else{ //online
+                mediaPlayer.setDataSource(base_Url + song.getSongSrc());
+                mediaPlayer.prepare();
+                bmOnPlayingSong = new DownloadImageTask(song_tab_SongImg).execute(base_Url + song.getSongImg()).get();
+            }
+            updateFragmentPlayMusic.updateSong(song.getSongName(), song.getArtistName());
             mediaPlayer.setOnCompletionListener(mediaPlayer -> {
                 mediaPlayer.stop();
                 nextSong = true;
             });
-            mediaPlayer.setDataSource(base_Url + song.getSongSrc());
-            mediaPlayer.prepare();
             mediaPlayer.start();
             recentlyPlayed(song.get_id());
-        } catch (IOException e) {
+        } catch (IOException | ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -487,13 +508,11 @@ public class MainActivity extends AppCompatActivity implements Playable{
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Something went wrong!", Toast.LENGTH_SHORT).show();
-            }
+            public void onFailure(Call<Void> call, Throwable t) {}
         });
     }
 
-    private void songPlayback() {
+    private void songPlayback() { // finish playing row, move back to the begin.
         try { mediaPlayer.prepare(); } catch (IOException e) { e.printStackTrace(); }
         song_tab_btnPause_Start.setImageResource(R.drawable.ic_play_music);
         updateFragmentPlayMusic.updateBtnPlay(R.drawable.ic_play_music);
@@ -540,7 +559,7 @@ public class MainActivity extends AppCompatActivity implements Playable{
         }
     }
 
-    public Runnable update = new Runnable() {
+    public Runnable update = new Runnable() { //update running time of the song that is playing, the seek is also call up to update in this function.
         @Override
         public void run() {
             updateFragmentPlayMusic.updateSongStart(new SimpleDateFormat("mm:ss").format(mediaPlayer.getCurrentPosition()));
@@ -548,7 +567,7 @@ public class MainActivity extends AppCompatActivity implements Playable{
         }
     };
 
-    Runnable playingOrder = new Runnable() {
+    Runnable playingOrder = new Runnable() { //define
         @Override
         public void run() {
             if (nextSong) {
@@ -703,15 +722,16 @@ public class MainActivity extends AppCompatActivity implements Playable{
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             manager.cancelAll();
         }
+        super.onDestroy();
+        mediaPlayer.release();
         unregisterReceiver(broadcastReceiver);
     }
 
     public interface UpdateFragmentPlayMusic{
-        void updateSong(String songName, String artistName, String imgUrl);
+        void updateSong(String songName, String artistName);
         void updateSongProgress(int progress);
         void updateBtnPlay(int btn);
         void updateSongEnd(String time);

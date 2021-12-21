@@ -72,7 +72,7 @@ public interface PlaceHolder {
             @Path("userId") String userId
     );
 
-    @GET("genres/{genreId}/{userId}")//localhost:3000/genres/6162bbec9298eb65df91223c/61bdc8c9ad3e90d33849dee9___________:genreId/:userId'
+    @GET("genres/{genreId}/{userId}")
     Call<List<songItem>> getUserGenres(
             @Path("genreId") String genreId,
             @Path("userId") String userId

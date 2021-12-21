@@ -96,7 +96,7 @@ public class listenNowFragment extends Fragment {
         PlaceHolder placeHolder = retrofit.create(PlaceHolder.class);
         ViewPager banner = view.findViewById(R.id.banner);
         CircleIndicator circleIndicator = view.findViewById(R.id.banner_indicator);
-        Call<List<playlistItem>> call = placeHolder.getPlaylistsByUser(SaveSharedPreference.getId(getContext()));
+        Call<List<playlistItem>> call = placeHolder.getPlaylistByUser_PlaylistNum("61bf9959d2b2d206fd981469", 2);
         call.enqueue(new Callback<List<playlistItem>>() {
             @Override
             public void onResponse(Call<List<playlistItem>> call, Response<List<playlistItem>> response) {
@@ -116,10 +116,10 @@ public class listenNowFragment extends Fragment {
                                 currentItem = 0;
                             }
                             banner.setCurrentItem(currentItem,true);
-                            handler.postDelayed(runnable,4500);
+                            handler.postDelayed(runnable,5500);
                         }
                     };
-                    handler.postDelayed(runnable,4500);
+                    handler.postDelayed(runnable,5500);
                 }
             }
 

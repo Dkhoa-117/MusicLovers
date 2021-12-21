@@ -57,7 +57,7 @@ public class playlistDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         TransitionInflater inflater = TransitionInflater.from(requireContext());
-        setExitTransition(inflater.inflateTransition(R.transition.fade));
+        setEnterTransition(inflater.inflateTransition(R.transition.fade));
     }
 
     @Nullable

@@ -3,6 +3,8 @@
     package="com.example.musiclovers">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
 
     <application
         android:allowBackup="true"
@@ -11,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MusicLovers"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true">
         <activity android:name=".signIn_signUpActivity.createNewAccount"
             android:parentActivityName=".signIn_signUpActivity.loginActivity"/>
         <activity android:name=".signIn_signUpActivity.loginActivity"/>
@@ -27,5 +30,4 @@
         </activity>
         <receiver android:name=".services.NotificationActionService"/>
     </application>
-
 </manifest>

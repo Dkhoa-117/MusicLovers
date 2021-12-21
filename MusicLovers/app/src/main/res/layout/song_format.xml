@@ -20,9 +20,9 @@
                 android:id="@+id/song_format_SongImg"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:layout_marginStart="5dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
+                android:layout_marginStart="5dp"
                 android:background="@drawable/background"
                 android:src="@drawable/ic_music" />
 

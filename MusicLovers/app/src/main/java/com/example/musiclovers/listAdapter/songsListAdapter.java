@@ -1,6 +1,8 @@
 package com.example.musiclovers.listAdapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -36,6 +38,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import wseemann.media.FFmpegMediaMetadataRetriever;
 
 /**
  * DONE
@@ -70,8 +73,19 @@ public class songsListAdapter extends RecyclerView.Adapter<songsListAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         songItem currentSong = songItems.get(position);
-        new DownloadImageTask(holder.image).execute(base_Url + currentSong.getSongImg());
-        holder.image.setAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_transition_animation));
+        if(currentSong.get_id() != null){
+            new DownloadImageTask(holder.image).execute(base_Url + currentSong.getSongImg());
+            holder.image.setAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_transition_animation));
+        }else{
+            FFmpegMediaMetadataRetriever retriever = new FFmpegMediaMetadataRetriever();
+            retriever.setDataSource(currentSong.getSongImg());
+            byte [] data = retriever.getEmbeddedPicture();
+            if (data != null){
+                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                holder.image.setImageBitmap(bitmap);
+            }
+            retriever.release();
+        }
         holder.artistName.setText(currentSong.getArtistName());
         holder.songName.setText(currentSong.getSongName());
         holder.itemView.setOnClickListener(view -> ((MainActivity) context).getSongs(songItems, holder.getAdapterPosition()));

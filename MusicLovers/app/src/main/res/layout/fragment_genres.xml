@@ -24,12 +24,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_genres" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/fragment_genres_RecyclerView"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_genres"/>
+        app:layout_constraintTop_toBottomOf="@+id/tv_genres">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/fragment_genres_RecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </androidx.core.widget.NestedScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

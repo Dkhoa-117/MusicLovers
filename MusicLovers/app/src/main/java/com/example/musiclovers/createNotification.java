@@ -83,6 +83,12 @@ public class createNotification extends AsyncTask<String, Void, Bitmap> {
         PendingIntent pendingIntentLike = PendingIntent.getBroadcast(context, 0,
                 intentLike, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        Intent intentBackToApp = new Intent(context, MainActivity.class)
+                .setAction(Intent.ACTION_MAIN)
+                .addCategory(Intent.CATEGORY_LAUNCHER);
+        PendingIntent pendingIntentBackToApp = PendingIntent.getActivity(context, 0,
+                intentBackToApp, 0);
+
         PendingIntent pendingIntentNext;
         int btnForward;
         if (position == (size - 1)){
@@ -103,6 +109,7 @@ public class createNotification extends AsyncTask<String, Void, Bitmap> {
                 .addAction(btnPlayOrPause, "play", pendingIntentPlay)
                 .addAction(btnForward, "next", pendingIntentNext)
                 .addAction(R.drawable.ic_unfill_heart, "like", pendingIntentLike)
+                .setContentIntent(pendingIntentBackToApp)
                 .setStyle(new androidx.media.app.NotificationCompat.MediaStyle().setShowActionsInCompactView(0, 1, 2))
                 .setLargeIcon(bitmap)
                 .setOnlyAlertOnce(true)

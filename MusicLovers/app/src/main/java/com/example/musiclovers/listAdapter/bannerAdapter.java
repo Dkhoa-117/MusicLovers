@@ -53,11 +53,11 @@ public class bannerAdapter extends PagerAdapter {
         ImageView bannerImage = view.findViewById(R.id.banner_format_banner_image);
         TextView bannerThumbnail = view.findViewById(R.id.banner_format_thumbnail);
         TextView bannerDescription = view.findViewById(R.id.banner_format_description);
-
-        new DownloadImageTask((ImageView) backgroundImage).execute("http://10.0.2.2:3000/"+ bannerList.get(position).getPlaylistImg());
+        backgroundImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        new DownloadImageTask(backgroundImage).execute("http://10.0.2.2:3000/"+ bannerList.get(position).getPlaylistImg());
         new DownloadImageTask(bannerImage).execute("http://10.0.2.2:3000/"+ bannerList.get(position).getPlaylistImg());
         bannerThumbnail.setText(bannerList.get(position).getPlaylistName());
-        //bannerDescription.setText(arrayListBanner.get(position).getNoidung());
+        bannerDescription.setText("Top Picks This Week: " + bannerList.get(position).getPlaylistName());
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
