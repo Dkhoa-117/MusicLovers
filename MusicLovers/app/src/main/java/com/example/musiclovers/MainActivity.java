@@ -667,17 +667,19 @@ public class MainActivity extends AppCompatActivity implements Playable{
 
     @Override
     public void onSongPause() {
-        handler.removeCallbacks(update);
-        mediaPlayer.pause();
-        song_tab_btnPause_Start.setImageResource(R.drawable.ic_play_music);
-        updateFragmentPlayMusic.updateBtnPlay(R.drawable.ic_play_music);
-        new createNotification(MainActivity.this,
-                songList.get(position).getSongName(),
-                songList.get(position).getArtistName(),
-                R.drawable.ic_play_music,
-                position,
-                songList.size())
-                .execute(base_Url + songList.get(position).getSongImg());
+        if(mediaPlayer!=null){
+            handler.removeCallbacks(update);
+            mediaPlayer.pause();
+            song_tab_btnPause_Start.setImageResource(R.drawable.ic_play_music);
+            updateFragmentPlayMusic.updateBtnPlay(R.drawable.ic_play_music);
+            new createNotification(MainActivity.this,
+                    songList.get(position).getSongName(),
+                    songList.get(position).getArtistName(),
+                    R.drawable.ic_play_music,
+                    position,
+                    songList.size())
+                    .execute(base_Url + songList.get(position).getSongImg());
+        }
     }
 
     @Override

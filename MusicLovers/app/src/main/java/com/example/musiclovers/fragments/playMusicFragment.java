@@ -1,10 +1,21 @@
 package com.example.musiclovers.fragments;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -12,9 +23,11 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.musiclovers.DownloadImageTask;
@@ -24,7 +37,11 @@ import com.example.musiclovers.R;
 import com.example.musiclovers.models.songItem;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import wseemann.media.FFmpegMediaMetadataRetriever;
@@ -89,41 +106,138 @@ public class playMusicFragment extends Fragment implements MainActivity.UpdateFr
     }
 
     private void handlerBtnOption() {
-        optionButton.setOnClickListener(view -> {
-            ArrayList<songItem> songList = ((MainActivity) getContext()).songList;
-            int position = ((MainActivity) getContext()).position;
-            PopupMenu popup = new PopupMenu(getContext(), view);
-            popup.inflate(R.menu.play_music_option_menu);
-            popup.show();
-            popup.setOnMenuItemClickListener(menuItem -> {
-                switch (menuItem.getItemId()) {
-                    case R.id.add_to_playlist_PlayMusic:
-                        if(!songList.isEmpty()) {
-                            ((MainActivity) getContext()).addSongToPlaylist(songList.get(position));
+
+        optionButton.setOnClickListener(new View.OnClickListener() {
+            CountDownTimer countDownTimer1;
+            @Override
+            public void onClick(View view) {
+                ArrayList<songItem> songList = ((MainActivity) playMusicFragment.this.getContext()).songList;
+                int position = ((MainActivity) playMusicFragment.this.getContext()).position;
+                PopupMenu popup = new PopupMenu(playMusicFragment.this.getContext(), view);
+                popup.inflate(R.menu.play_music_option_menu);
+                popup.show();
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        int time1 = 0;
+                        switch (menuItem.getItemId()) {
+                            case R.id.add_to_playlist_PlayMusic:
+                                if (!songList.isEmpty()) {
+                                    ((MainActivity) playMusicFragment.this.getContext()).addSongToPlaylist(songList.get(position));
+                                }
+                                break;
+                            case R.id.go_to_artist:
+                                if (!songList.isEmpty()) {
+                                    ((MainActivity) playMusicFragment.this.getContext()).goToArtistDetail(songList.get(position));
+                                    ((MainActivity) playMusicFragment.this.getContext()).bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                                }
+                                break;
+                            case R.id.show_album:
+                                if (!songList.isEmpty()) {
+                                    ((MainActivity) playMusicFragment.this.getContext()).goToAlbumDetail(songList.get(position));
+                                    ((MainActivity) playMusicFragment.this.getContext()).bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                                }
+                                break;
+                            case R.id.like:
+                                //like song and add song to playlist [favorite songs]
+                                if (!songList.isEmpty()) {
+                                    ((MainActivity) playMusicFragment.this.getContext()).loveMeOrNot(songList.get(position));
+                                }
+                                break;
+
+                            case R.id.timer_15:
+                                time1 = 15 * 60000;
+                                break;
+                            case R.id.timer_30:
+                                time1 = 30 * 60000;
+                                break;
+                            case R.id.timer_45:
+                                time1 = 45 * 60000;
+                                break;
+                            case R.id.timer_1:
+                                time1 = 5000;
+                                break;
                         }
-                        break;
-                    case R.id.go_to_artist:
-                        if(!songList.isEmpty()){
-                            ((MainActivity) getContext()).goToArtistDetail(songList.get(position));
-                            ((MainActivity) getContext()).bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+                        if(time1 != 0){
+                            if (countDownTimer1 != null) {
+                                countDownTimer1.cancel();
+                            }
+                            if (time1 != 0) {
+                                int finalTime = time1;
+                                countDownTimer1 = new CountDownTimer(finalTime, 1000) {
+                                    @Override
+                                    public void onTick(long l) {
+                                    }
+
+                                    @Override
+                                    public void onFinish() {
+                                        ((MainActivity)getContext()).onSongPause();
+                                        ((MainActivity)getContext()).isRepeat = false;
+                                    }
+                                };
+                                countDownTimer1.start();
+                                sleepTimer(time1, countDownTimer1);
+                            }
                         }
-                        break;
-                    case R.id.show_album:
-                        if(!songList.isEmpty()){
-                            ((MainActivity) getContext()).goToAlbumDetail(songList.get(position));
-                            ((MainActivity) getContext()).bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                        }
-                        break;
-                    case R.id.like:
-                        //like song and add song to playlist [favorite songs]
-                        if(!songList.isEmpty()){
-                            ((MainActivity) getContext()).loveMeOrNot(songList.get(position));
-                        }
-                        break;
-                }
-                return true;
-            });
+                        return true;
+                    }
+                });
+            }
         });
+    }
+
+    void sleepTimer(int time, CountDownTimer countDownTimer){
+        NotificationManager mNotificationManager;
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(getContext(), "notify_001");
+        Intent ii = new Intent(getContext(), MainActivity.class)
+                .setAction(Intent.ACTION_MAIN)
+                .addCategory(Intent.CATEGORY_LAUNCHER);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, ii, 0);
+
+
+        NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
+        Date date = new Date(new Date().getTime() + time);
+        String currentTime = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(date);
+        bigText.bigText("Music will turn off at "+ currentTime);
+        bigText.setBigContentTitle("Sleep Timer is On 😪");
+        bigText.setSummaryText("Delete this to Turn Sleep Timer Off");
+        final BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                ((MainActivity)getContext()).isRepeat = false;
+                countDownTimer.cancel();
+                requireActivity().unregisterReceiver(this);
+            }
+        };
+        Intent intent = new Intent("NOTIFICATION_DELETED_ACTION");
+        PendingIntent pendingIntentDelete = PendingIntent.getBroadcast(getContext(), 0, intent, 0);
+        requireActivity().registerReceiver(receiver, new IntentFilter("NOTIFICATION_DELETED_ACTION"));
+
+        mBuilder.setContentIntent(pendingIntent)
+                .setDeleteIntent(pendingIntentDelete)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setContentTitle("Your Title")
+                .setContentText("Your text")
+                .setPriority(Notification.PRIORITY_MAX)
+                .setStyle(bigText);
+
+        mNotificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            String channelId = "Your_channel_id";
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "Channel human readable title",
+                    NotificationManager.IMPORTANCE_HIGH);
+            mNotificationManager.createNotificationChannel(channel);
+            mBuilder.setChannelId(channelId);
+        }
+
+        mNotificationManager.notify(1, mBuilder.build());
+        ((MainActivity)getContext()).isRepeat = true;
     }
 
     private void btnPause_StartHandler() {
