@@ -18,7 +18,6 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -38,22 +37,27 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.musiclovers.fragments.albumDetailFragment;
-import com.example.musiclovers.fragments.artistDetailFragment;
-import com.example.musiclovers.fragments.browseFragment;
-import com.example.musiclovers.fragments.libraryFragment;
-import com.example.musiclovers.fragments.listenNowFragment;
-import com.example.musiclovers.fragments.lyricsFragment;
-import com.example.musiclovers.fragments.playMusicFragment;
-import com.example.musiclovers.fragments.playingNextFragment;
-import com.example.musiclovers.fragments.searchFragment;
-import com.example.musiclovers.listAdapter.playlistAdapter;
-import com.example.musiclovers.models.albumItem;
-import com.example.musiclovers.models.artistItem;
-import com.example.musiclovers.models.playlistItem;
-import com.example.musiclovers.models.songItem;
-import com.example.musiclovers.signIn_signUpActivity.SaveSharedPreference;
-import com.example.musiclovers.signIn_signUpActivity.loginActivity;
+import com.example.musiclovers.Fragments.AlbumDetail;
+import com.example.musiclovers.Fragments.ArtistDetail;
+import com.example.musiclovers.Fragments.Browse;
+import com.example.musiclovers.Fragments.Library;
+import com.example.musiclovers.Fragments.ListenNow;
+import com.example.musiclovers.Fragments.LyricsFragment;
+import com.example.musiclovers.Fragments.PlayMusic;
+import com.example.musiclovers.Fragments.PlayingNext;
+import com.example.musiclovers.Fragments.Search;
+import com.example.musiclovers.ListAdapter.playlistAdapter;
+import com.example.musiclovers.Models.Album;
+import com.example.musiclovers.Models.artistItem;
+import com.example.musiclovers.Models.playlistItem;
+import com.example.musiclovers.Models.songItem;
+import com.example.musiclovers.Services.DownloadImageTask;
+import com.example.musiclovers.Services.PlaceHolder;
+import com.example.musiclovers.Services.Playable;
+import com.example.musiclovers.Services.ViewModel;
+import com.example.musiclovers.Services.createNotification;
+import com.example.musiclovers.SignInSignUp.SaveSharedPreference;
+import com.example.musiclovers.SignInSignUp.loginActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
@@ -70,7 +74,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import wseemann.media.FFmpegMediaMetadataRetriever;
 
-public class MainActivity extends AppCompatActivity implements Playable{
+public class MainActivity extends AppCompatActivity implements Playable {
     /* Declare */
     String base_Url = "http://10.0.2.2:3000/";
     public ArrayList<songItem> songList = new ArrayList<>();
@@ -111,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements Playable{
         setUpVolumeSeekBar();
         tabSong_playMusicFragment();
         if (savedInstanceState == null)
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new listenNowFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ListenNow()).commit();
         NavigationBar();
         createNotificationChannel();
         viewPagerInit();
@@ -179,15 +183,15 @@ public class MainActivity extends AppCompatActivity implements Playable{
         @Override
         public Fragment createFragment(int position) {
             if (position == 0) {
-                playingNext = new playingNextFragment();
+                playingNext = new PlayingNext();
                 updateFragmentPlayingNext = (UpdateFragmentPlayingNext) playingNext;
                 return playingNext;
             } else if (position == 1) {
-                play_music = new playMusicFragment();
+                play_music = new PlayMusic();
                 updateFragmentPlayMusic = (UpdateFragmentPlayMusic) play_music;
                 return play_music;
             } else {
-                return new lyricsFragment();
+                return new LyricsFragment();
             }
         }
 
@@ -219,16 +223,16 @@ public class MainActivity extends AppCompatActivity implements Playable{
     }
 
     public void goToAlbumDetail(songItem songItem) {
-        Call<albumItem> call1 = placeHolder.getAlbum(songItem.getAlbumId());
-        call1.enqueue(new Callback<albumItem>() {
+        Call<Album> call1 = placeHolder.getAlbum(songItem.getAlbumId());
+        call1.enqueue(new Callback<Album>() {
             @Override
-            public void onResponse(@NonNull Call<albumItem> call, @NonNull Response<albumItem> response) {
+            public void onResponse(@NonNull Call<Album> call, @NonNull Response<Album> response) {
                 if (response.isSuccessful()) {
-                    albumItem album = response.body();
+                    Album album = response.body();
                     ViewModel viewModel = new ViewModelProvider(MainActivity.this).get(ViewModel.class);
                     viewModel.select(album);
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, new albumDetailFragment())
+                            .replace(R.id.fragment_container, new AlbumDetail())
                             .addToBackStack(null)
                             .setReorderingAllowed(true)
                             .commit();
@@ -236,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements Playable{
             }
 
             @Override
-            public void onFailure(@NonNull Call<albumItem> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<Album> call, @NonNull Throwable t) {
                 Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
@@ -253,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements Playable{
                     ViewModel viewModel = new ViewModelProvider(MainActivity.this).get(ViewModel.class);
                     viewModel.select(artist);
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.fragment_container, new artistDetailFragment())
+                            .replace(R.id.fragment_container, new ArtistDetail())
                             .addToBackStack(null)
                             .setReorderingAllowed(true)
                             .commit();
@@ -387,16 +391,16 @@ public class MainActivity extends AppCompatActivity implements Playable{
             Fragment selectedFragment = null;
             switch (item.getItemId()) {
                 case R.id.Listen_Now_page:
-                    selectedFragment = new listenNowFragment();
+                    selectedFragment = new ListenNow();
                     break;
                 case R.id.Browse_page:
-                    selectedFragment = new browseFragment();
+                    selectedFragment = new Browse();
                     break;
                 case R.id.Library_page:
-                    selectedFragment = new libraryFragment();
+                    selectedFragment = new Library();
                     break;
                 case R.id.Search_page:
-                    selectedFragment = new searchFragment();
+                    selectedFragment = new Search();
                     break;
             }
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
@@ -406,16 +410,16 @@ public class MainActivity extends AppCompatActivity implements Playable{
             Fragment selectedFragment = null;
             switch (item.getItemId()) {
                 case R.id.Listen_Now_page:
-                    selectedFragment = new listenNowFragment();
+                    selectedFragment = new ListenNow();
                     break;
                 case R.id.Browse_page:
-                    selectedFragment = new browseFragment();
+                    selectedFragment = new Browse();
                     break;
                 case R.id.Library_page:
-                    selectedFragment = new libraryFragment();
+                    selectedFragment = new Library();
                     break;
                 case R.id.Search_page:
-                    selectedFragment = new searchFragment();
+                    selectedFragment = new Search();
                     break;
             }
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();

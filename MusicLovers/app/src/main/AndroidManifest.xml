@@ -15,9 +15,9 @@
         android:theme="@style/Theme.MusicLovers"
         android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true">
-        <activity android:name=".signIn_signUpActivity.createNewAccount"
-            android:parentActivityName=".signIn_signUpActivity.loginActivity"/>
-        <activity android:name=".signIn_signUpActivity.loginActivity"/>
+        <activity android:name=".SignInSignUp.createNewAccount"
+            android:parentActivityName=".SignInSignUp.loginActivity"/>
+        <activity android:name=".SignInSignUp.loginActivity"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -28,6 +28,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".services.NotificationActionService"/>
+        <receiver android:name=".Services.NotificationActionService"/>
     </application>
 </manifest>
