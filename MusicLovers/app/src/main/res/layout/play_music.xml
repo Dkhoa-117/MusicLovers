@@ -6,9 +6,9 @@
     app:behavior_hideable="true"
     app:behavior_peekHeight="10dp"
     android:layout_width="match_parent"
+    android:nestedScrollingEnabled="true"
     android:layout_height="match_parent"
     android:weightSum="10"
-    android:background="#FFF"
     android:orientation="vertical"
     xmlns:tool="http://schemas.android.com/tools">
 
@@ -24,7 +24,6 @@
             android:layout_height="50dp"
             android:scaleType="fitXY"
             android:src="@drawable/ic_up"
-            android:layout_marginTop="15dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

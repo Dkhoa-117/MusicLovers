@@ -1,5 +1,6 @@
 package com.example.musiclovers.Services;
 
+import com.example.musiclovers.Fragments.LyricsFragment;
 import com.example.musiclovers.Models.Album;
 import com.example.musiclovers.Models.artistItem;
 import com.example.musiclovers.Models.genreItem;
@@ -81,6 +82,9 @@ public interface PlaceHolder {
 
     @GET("genres")
     Call<List<genreItem>> getGenres();
+
+    @GET("lyrics/{songId}")
+    Call<LyricsFragment.Lyrics> getLyrics(@Path("songId") String songId);
 
     @GET("songs/search")
     Call<List<songItem>> searchSongs (@Query("q") String q);

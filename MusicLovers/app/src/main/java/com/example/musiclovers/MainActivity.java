@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements Playable {
     //interface - using to update fragment
     public static UpdateFragmentPlayMusic updateFragmentPlayMusic;
     public static UpdateFragmentPlayingNext updateFragmentPlayingNext;
-
+    public static UpdateFragmentLyrics updateFragmentLyrics;
     //fragment song_tab
     TextView song_tab_SongName;
     ImageView song_tab_SongImg;
@@ -102,8 +102,7 @@ public class MainActivity extends AppCompatActivity implements Playable {
 
     //ViewPager - using to create view that slide left and right
     private ViewPager2 mPager;
-    private ScreenSlidePagerAdapter pagerAdapter;
-    public static Fragment play_music, playingNext;
+    public static Fragment play_music, playingNext, lyrics;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,13 +164,15 @@ public class MainActivity extends AppCompatActivity implements Playable {
 
     private void viewPagerInit(){
         mPager = findViewById(R.id.pager);
-        pagerAdapter = new ScreenSlidePagerAdapter(this);
+        ScreenSlidePagerAdapter pagerAdapter = new ScreenSlidePagerAdapter(this);
         mPager.setAdapter(pagerAdapter);
         mPager.setCurrentItem(1);
-        View v =  mPager.getChildAt(0);
-        if (v != null) {
-            v.setNestedScrollingEnabled(false);
+        mPager.setOffscreenPageLimit(3);
+        View v2 =  mPager.getChildAt(0);
+        if (v2 != null) {
+            v2.setNestedScrollingEnabled(false);
         }
+
     }
 
     private static class ScreenSlidePagerAdapter extends FragmentStateAdapter {
@@ -181,18 +182,23 @@ public class MainActivity extends AppCompatActivity implements Playable {
 
         @NonNull
         @Override
-        public Fragment createFragment(int position) {
-            if (position == 0) {
+        public Fragment createFragment(int p) {
+            if (p == 2) {
                 playingNext = new PlayingNext();
                 updateFragmentPlayingNext = (UpdateFragmentPlayingNext) playingNext;
                 return playingNext;
-            } else if (position == 1) {
+            }
+                if (p == 1) {
                 play_music = new PlayMusic();
                 updateFragmentPlayMusic = (UpdateFragmentPlayMusic) play_music;
                 return play_music;
-            } else {
-                return new LyricsFragment();
             }
+                if (p == 0){
+                lyrics =  new LyricsFragment();
+                updateFragmentLyrics = (UpdateFragmentLyrics) lyrics;
+                return lyrics;
+            }
+            return null;
         }
 
         @Override
@@ -475,6 +481,8 @@ public class MainActivity extends AppCompatActivity implements Playable {
                 mediaPlayer.setDataSource(base_Url + song.getSongSrc());
                 mediaPlayer.prepare();
                 bmOnPlayingSong = new DownloadImageTask(song_tab_SongImg).execute(base_Url + song.getSongImg()).get();
+                updateFragmentLyrics.getData(song.get_id(), placeHolder, mediaPlayer);
+
             }
             updateFragmentPlayMusic.updateSong(song.getSongName(), song.getArtistName());
             mediaPlayer.setOnCompletionListener(mediaPlayer -> {
@@ -732,7 +740,9 @@ public class MainActivity extends AppCompatActivity implements Playable {
             manager.cancelAll();
         }
         super.onDestroy();
-        mediaPlayer.release();
+        if(mediaPlayer != null){
+            mediaPlayer.release();
+        }
         unregisterReceiver(broadcastReceiver);
     }
 
@@ -749,5 +759,9 @@ public class MainActivity extends AppCompatActivity implements Playable {
     public interface UpdateFragmentPlayingNext{
         void initDisplayNextSongsList(ArrayList<songItem> songsList, int position);
         void updateDisplayNextSongsList(Boolean isNext, Boolean isPrevious, songItem song);
+    }
+
+    public interface UpdateFragmentLyrics{
+        void getData(String songId, PlaceHolder placeHolder, MediaPlayer mediaPlayer);
     }
 }
