@@ -84,7 +84,7 @@ public interface PlaceHolder {
     Call<List<genreItem>> getGenres();
 
     @GET("lyrics/{songId}")
-    Call<LyricsFragment.Lyrics> getLyrics(@Path("songId") String songId);
+    Call<LyricsFragment.LyricsResponse> getLyrics(@Path("songId") String songId);
 
     @GET("songs/search")
     Call<List<songItem>> searchSongs (@Query("q") String q);

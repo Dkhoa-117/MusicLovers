@@ -2,11 +2,15 @@ package com.example.musiclovers.Fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,13 +57,37 @@ public class LyricsFragment extends Fragment implements MainActivity.UpdateFragm
 
     @Override
     public void getData(String songId, PlaceHolder placeHolder, MediaPlayer mediaPlayer) {
-        Call<Lyrics> call = placeHolder.getLyrics(songId);
-        call.enqueue(new Callback<Lyrics>() {
+        Call<LyricsResponse> call = placeHolder.getLyrics(songId);
+        call.enqueue(new Callback<LyricsResponse>() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
-            public void onResponse(@NonNull Call<Lyrics> call, @NonNull Response<Lyrics> response) {
+            public void onResponse(@NonNull Call<LyricsResponse> call, @NonNull Response<LyricsResponse> response) {
                 if(response.isSuccessful()){
-                    String[] temp = ((Lyrics) response.body()).lyrics.split("\n");
+                    LyricsResponse songLyrics = (LyricsResponse) response.body();
+                    String[] temp = songLyrics.lyrics.split("\n");
+                    ArrayList<Integer> times = songLyrics.time;
+                    final int[] i = {0};
+                    Handler handler = new Handler();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            int temp = mediaPlayer.getCurrentPosition();
+                            Log.d("runnable1", String.valueOf(i[0]));
+                            Log.d("runnable", String.valueOf(temp));
+                            if(i[0] < lyricsAdapter.getItemCount()) {
+                                if (temp > times.get(i[0])) {
+                                    lyricsAdapter.selected = i[0];
+                                    lyricsAdapter.notifyDataSetChanged();
+                                    lyricRecyclerView.smoothScrollToPosition(i[0]);
+                                    i[0]++;
+                                }
+                            }else{
+                                handler.removeCallbacks(this);
+                            }
+                            handler.postDelayed(this, 100);
+                        }
+                    });
+
                     lines.clear();
                     Collections.addAll(lines, temp);
                 }else{
@@ -69,7 +97,7 @@ public class LyricsFragment extends Fragment implements MainActivity.UpdateFragm
                 lyricsAdapter.notifyDataSetChanged();
             }
             @Override
-            public void onFailure(Call<Lyrics> call, Throwable t) {
+            public void onFailure(Call<LyricsResponse> call, Throwable t) {
                 Toast.makeText(LyricsFragment.this.getContext(), "Something went wrong!", Toast.LENGTH_LONG).show();
             }
         });
@@ -79,18 +107,21 @@ public class LyricsFragment extends Fragment implements MainActivity.UpdateFragm
         }
     }
 
-    public static class Lyrics{
+    public static class LyricsResponse{
         String lyrics;
+        ArrayList<Integer> time;
     }
 
     public static class LyricsAdapter extends RecyclerView.Adapter<LyricsAdapter.ViewHolder> {
 
         ArrayList<String> lines;
         Context context;
+        int selected;
 
         public LyricsAdapter(ArrayList<String> lines, Context context) {
             this.context = context;
             this.lines = lines;
+            this.selected = -1;
         }
 
         @NonNull
@@ -105,6 +136,9 @@ public class LyricsFragment extends Fragment implements MainActivity.UpdateFragm
         public void onBindViewHolder(@NonNull LyricsAdapter.ViewHolder holder, int position) {
             String line = lines.get(position);
             holder.lyrics.setText(line);
+            if(position == selected){
+                holder.lyrics.setTextColor(Color.parseColor("#000000"));
+            }
         }
 
         @Override

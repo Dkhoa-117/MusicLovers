@@ -59,7 +59,7 @@ public class loginActivity extends AppCompatActivity {
         btn_logIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String email = emailLogIn.getText().toString();
+                String email = emailLogIn.getText().toString().trim();
                 String password = passwordLogIn.getText().toString();
                 if((email.isEmpty() || password.isEmpty()) || !Patterns.EMAIL_ADDRESS.matcher(email).matches()){
                     Toast.makeText(loginActivity.this, "Invalid Username or Password!", Toast.LENGTH_SHORT).show();
