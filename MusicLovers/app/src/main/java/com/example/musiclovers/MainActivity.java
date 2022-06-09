@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements Playable {
         @NonNull
         @Override
         public Fragment createFragment(int p) {
-            if (p == 2) {
+            if (p == 0) {
                 playingNext = new PlayingNext();
                 updateFragmentPlayingNext = (UpdateFragmentPlayingNext) playingNext;
                 return playingNext;
@@ -193,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements Playable {
                 updateFragmentPlayMusic = (UpdateFragmentPlayMusic) play_music;
                 return play_music;
             }
-                if (p == 0){
+                if (p == 2){
                 lyrics =  new LyricsFragment();
                 updateFragmentLyrics = (UpdateFragmentLyrics) lyrics;
                 return lyrics;
@@ -505,7 +505,7 @@ public class MainActivity extends AppCompatActivity implements Playable {
                 songList.size())
                 .execute(base_Url + songList.get(position).getSongImg());
 
-        handler.postDelayed(playingOrder, 1000);
+        handler.postDelayed(playingOrder, 500);
         song_tab_btnPause_Start.setImageResource(R.drawable.ic_pause);
     }
 
@@ -615,7 +615,7 @@ public class MainActivity extends AppCompatActivity implements Playable {
                 }
                 nextSong = false;
             } else {
-                handler.postDelayed(this, 1000);
+                handler.postDelayed(this, 300);
             }
         }
     };

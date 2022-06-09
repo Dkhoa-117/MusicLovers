@@ -3,6 +3,7 @@ package com.example.musiclovers.Fragments;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,6 +36,7 @@ public class LyricsFragment extends Fragment implements MainActivity.UpdateFragm
     RecyclerView lyricRecyclerView;
     public LyricsAdapter lyricsAdapter;
     ArrayList<String> lines = new ArrayList<>();
+    Handler handler = new Handler();
     BarVisualizer visualizer;
     @Nullable
     @Override
@@ -50,7 +52,7 @@ public class LyricsFragment extends Fragment implements MainActivity.UpdateFragm
         super.onViewCreated(view, savedInstanceState);
 
         lyricsAdapter = new LyricsAdapter(lines, getContext());
-        lyricRecyclerView.setHasFixedSize(true);
+        //lyricRecyclerView.setHasFixedSize(true);
         lyricRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         lyricRecyclerView.setAdapter(lyricsAdapter);
     }
@@ -67,26 +69,28 @@ public class LyricsFragment extends Fragment implements MainActivity.UpdateFragm
                     String[] temp = songLyrics.lyrics.split("\n");
                     ArrayList<Integer> times = songLyrics.time;
                     final int[] i = {0};
-                    Handler handler = new Handler();
-                    handler.post(new Runnable() {
+                    Runnable runnable = new Runnable() {
                         @Override
                         public void run() {
-                            int temp = mediaPlayer.getCurrentPosition();
-                            Log.d("runnable1", String.valueOf(i[0]));
-                            Log.d("runnable", String.valueOf(temp));
+                            int pos = mediaPlayer.getCurrentPosition();
                             if(i[0] < lyricsAdapter.getItemCount()) {
-                                if (temp > times.get(i[0])) {
+                                if ((pos/1000) == times.get(i[0]) && lyricsAdapter.selected != i[0]) {
                                     lyricsAdapter.selected = i[0];
+                                    Log.d("runnable1", String.valueOf(i[0]));
+                                    Log.d("runnable", String.valueOf((pos/1000)*1000));
                                     lyricsAdapter.notifyDataSetChanged();
                                     lyricRecyclerView.smoothScrollToPosition(i[0]);
                                     i[0]++;
                                 }
+                                handler.postDelayed(this, 500);
                             }else{
                                 handler.removeCallbacks(this);
+                                lyricsAdapter.selected = -1;
+                                lyricsAdapter.notifyDataSetChanged();
                             }
-                            handler.postDelayed(this, 100);
                         }
-                    });
+                    };
+                    handler.postDelayed(runnable, 300);
 
                     lines.clear();
                     Collections.addAll(lines, temp);
@@ -136,8 +140,9 @@ public class LyricsFragment extends Fragment implements MainActivity.UpdateFragm
         public void onBindViewHolder(@NonNull LyricsAdapter.ViewHolder holder, int position) {
             String line = lines.get(position);
             holder.lyrics.setText(line);
-            if(position == selected){
+            if(selected == position){
                 holder.lyrics.setTextColor(Color.parseColor("#000000"));
+                holder.lyrics.setTypeface(Typeface.DEFAULT_BOLD);
             }
         }
 
