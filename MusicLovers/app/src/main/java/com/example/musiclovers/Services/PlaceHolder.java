@@ -1,12 +1,12 @@
 package com.example.musiclovers.Services;
 
-import com.example.musiclovers.Fragments.LyricsFragment;
+import com.example.musiclovers.Fragments.PlayMusicView.LyricsFragment;
 import com.example.musiclovers.Models.Album;
-import com.example.musiclovers.Models.artistItem;
-import com.example.musiclovers.Models.genreItem;
-import com.example.musiclovers.Models.playlistItem;
-import com.example.musiclovers.Models.songItem;
-import com.example.musiclovers.Models.userItem;
+import com.example.musiclovers.Models.Artist;
+import com.example.musiclovers.Models.Genre;
+import com.example.musiclovers.Models.Playlist;
+import com.example.musiclovers.Models.Song;
+import com.example.musiclovers.Models.User;
 
 import java.util.List;
 
@@ -24,10 +24,10 @@ import retrofit2.http.Query;
 public interface PlaceHolder {
     // 👇 GET 👇
     @GET("songs")
-    Call<List<songItem>> getSongs();
+    Call<List<Song>> getSongs();
 
     @GET("songs/{songId}")
-    Call<songItem> getSong (@Path("songId") String songId);
+    Call<Song> getSong (@Path("songId") String songId);
 
     @GET("albums")
     Call<List<Album>> getAlbums();
@@ -39,68 +39,68 @@ public interface PlaceHolder {
     Call<List<Album>> getAlbumsByArtist (@Path("artistId") String artistId);
 
     @GET("songs/album/{albumId}")
-    Call<List<songItem>> getSongsByAlbum (@Path("albumId") String albumId);
+    Call<List<Song>> getSongsByAlbum (@Path("albumId") String albumId);
 
     @GET("songs/category/{category}")
-    Call<List<songItem>> getSongsByCategory (@Path("category") String category); //new-music * best-new-songs *
+    Call<List<Song>> getSongsByCategory (@Path("category") String category); //new-music * best-new-songs *
 
     @GET("albums/category/{category}")
     Call<List<Album>> getAlbumsByCategory (@Path("category") String category); //new-albums * hot-albums *
 
     @GET("songs/artist/{artistId}")
-    Call<List<songItem>> getSongsByArtist (@Path("artistId") String artistId);
+    Call<List<Song>> getSongsByArtist (@Path("artistId") String artistId);
 
     @GET("playlists/{playlistId}")
-    Call<playlistItem> getPlaylist (@Path("playlistId") String playlistId);
+    Call<Playlist> getPlaylist (@Path("playlistId") String playlistId);
 
     @GET("playlists/songs/{playlistId}")
-    Call<List<songItem>> getSongsByPlaylist (@Path("playlistId") String playlistId);
+    Call<List<Song>> getSongsByPlaylist (@Path("playlistId") String playlistId);
 
     @GET("playlists/user/{userId}")
-    Call<List<playlistItem>> getPlaylistsByUser (@Path("userId") String userId);
+    Call<List<Playlist>> getPlaylistsByUser (@Path("userId") String userId);
 
     @GET("playlists/{userId}/{playlist_number}")
-    Call<List<playlistItem>> getPlaylistByUser_PlaylistNum(@Path("userId") String userId, @Path("playlist_number") int playlist_number);
+    Call<List<Playlist>> getPlaylistByUser_PlaylistNum(@Path("userId") String userId, @Path("playlist_number") int playlist_number);
 
     @GET("artists/user/{userId}")
-    Call<List<artistItem>> getArtistsByUser(
+    Call<List<Artist>> getArtistsByUser(
             @Path("userId") String userId
     );
 
     @GET("artists/{userId}/{artistId}")
-    Call<artistItem> getArtist(
+    Call<Artist> getArtist(
             @Path("artistId") String artistId,
             @Path("userId") String userId
     );
 
     @GET("genres/{genreId}/{userId}")
-    Call<List<songItem>> getUserGenres(
+    Call<List<Song>> getUserGenres(
             @Path("genreId") String genreId,
             @Path("userId") String userId
 
     );
 
     @GET("genres")
-    Call<List<genreItem>> getGenres();
+    Call<List<Genre>> getGenres();
 
     @GET("lyrics/{songId}")
     Call<LyricsFragment.LyricsResponse> getLyrics(@Path("songId") String songId);
 
     @GET("songs/search")
-    Call<List<songItem>> searchSongs (@Query("q") String q);
+    Call<List<Song>> searchSongs (@Query("q") String q);
 
     @GET("albums/search")
     Call<List<Album>> searchAlbums (@Query("q") String q);
 
     @GET("artists/search")
-    Call<List<artistItem>> searchArtists (@Query("q") String q);
+    Call<List<Artist>> searchArtists (@Query("q") String q);
 
     // 👇 PATCH 👇
 
     // 👇 POST 👇
     @FormUrlEncoded
     @POST("users/")
-    Call<userItem> register(
+    Call<User> register(
             @Field("userName") String userName,
             @Field("email") String email,
             @Field("password") String password
@@ -108,14 +108,14 @@ public interface PlaceHolder {
 
     @FormUrlEncoded
     @POST("users/login")
-    Call<userItem> login(
+    Call<User> login(
             @Field("email") String email,
             @Field("password") String password
     );
 
     @FormUrlEncoded
     @POST("playlists/")
-    Call<playlistItem> createPlaylist(
+    Call<Playlist> createPlaylist(
             @Field("playlistName") String playlistName,
             @Field("userId") String userId
     );

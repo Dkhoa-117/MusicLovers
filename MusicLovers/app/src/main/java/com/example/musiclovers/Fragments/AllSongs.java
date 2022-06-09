@@ -13,20 +13,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.musiclovers.R;
-import com.example.musiclovers.ListAdapter.songsListAdapter;
-import com.example.musiclovers.Models.songItem;
+import com.example.musiclovers.ListAdapter.SongsListAdapter;
+import com.example.musiclovers.Models.Song;
 
 import java.util.ArrayList;
 
 public class AllSongs extends Fragment {
-    ArrayList<songItem> songItems = new ArrayList<>();
+    ArrayList<Song> songItems = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         TransitionInflater inflater = TransitionInflater.from(requireContext());
         setExitTransition(inflater.inflateTransition(R.transition.fade));
-        songItems = (ArrayList<songItem>) getArguments().getSerializable("songsList");
+        songItems = (ArrayList<Song>) getArguments().getSerializable("songsList");
     }
 
     @Nullable
@@ -41,7 +41,7 @@ public class AllSongs extends Fragment {
         RecyclerView songsRecyclerView = view.findViewById(R.id.fragment_all_songs_RecyclerView);
         songsRecyclerView.setHasFixedSize(true);
         songsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        songsListAdapter songsListAdapter = new songsListAdapter(
+        SongsListAdapter songsListAdapter = new SongsListAdapter(
                 R.layout.song_format,
                 R.id.song_format_SongName,
                 R.id.song_format_ArtistName,

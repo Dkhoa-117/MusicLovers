@@ -15,7 +15,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.example.musiclovers.MainActivity;
 import com.example.musiclovers.Services.PlaceHolder;
 import com.example.musiclovers.R;
-import com.example.musiclovers.Models.userItem;
+import com.example.musiclovers.Models.User;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -65,16 +65,16 @@ public class loginActivity extends AppCompatActivity {
                     Toast.makeText(loginActivity.this, "Invalid Username or Password!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Call<userItem> call = placeHolder.login(email, password);
-                call.enqueue(new Callback<userItem>() {
+                Call<User> call = placeHolder.login(email, password);
+                call.enqueue(new Callback<User>() {
                     @Override
-                    public void onResponse(Call<userItem> call, Response<userItem> response) {
+                    public void onResponse(Call<User> call, Response<User> response) {
                         if(!response.isSuccessful()) {
                             Toast.makeText(loginActivity.this,response.code() + ": " + response.message(), Toast.LENGTH_SHORT).show();
                             return;
                         }
                         Toast.makeText(getApplicationContext(), "Success!!!", Toast.LENGTH_SHORT).show();
-                        userItem user = response.body();
+                        User user = response.body();
                         Intent intent = new Intent(loginActivity.this, MainActivity.class);
                         startActivity(intent);
                         SaveSharedPreference.setUser(getApplicationContext(), user.getUserName(), user.getEmail(), user.getAvatar(), user.get_id());
@@ -84,7 +84,7 @@ public class loginActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<userItem> call, Throwable t) {
+                    public void onFailure(Call<User> call, Throwable t) {
                         Toast.makeText(getApplicationContext(), "Something went wrong! 😢 \n Please try again! \n"+t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });

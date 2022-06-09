@@ -37,25 +37,25 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.musiclovers.Fragments.AlbumDetail;
-import com.example.musiclovers.Fragments.ArtistDetail;
-import com.example.musiclovers.Fragments.Browse;
-import com.example.musiclovers.Fragments.Library;
-import com.example.musiclovers.Fragments.ListenNow;
-import com.example.musiclovers.Fragments.LyricsFragment;
-import com.example.musiclovers.Fragments.PlayMusic;
-import com.example.musiclovers.Fragments.PlayingNext;
-import com.example.musiclovers.Fragments.Search;
-import com.example.musiclovers.ListAdapter.playlistAdapter;
+import com.example.musiclovers.Fragments.Album.AlbumDetail;
+import com.example.musiclovers.Fragments.Artist.ArtistDetail;
+import com.example.musiclovers.Fragments.Main.Browse;
+import com.example.musiclovers.Fragments.Main.Library;
+import com.example.musiclovers.Fragments.Main.ListenNow;
+import com.example.musiclovers.Fragments.PlayMusicView.LyricsFragment;
+import com.example.musiclovers.Fragments.PlayMusicView.PlayMusic;
+import com.example.musiclovers.Fragments.PlayMusicView.PlayingNext;
+import com.example.musiclovers.Fragments.Main.Search;
+import com.example.musiclovers.ListAdapter.PlaylistAdapter;
 import com.example.musiclovers.Models.Album;
-import com.example.musiclovers.Models.artistItem;
-import com.example.musiclovers.Models.playlistItem;
-import com.example.musiclovers.Models.songItem;
+import com.example.musiclovers.Models.Artist;
+import com.example.musiclovers.Models.Playlist;
+import com.example.musiclovers.Models.Song;
 import com.example.musiclovers.Services.DownloadImageTask;
 import com.example.musiclovers.Services.PlaceHolder;
 import com.example.musiclovers.Services.Playable;
 import com.example.musiclovers.Services.ViewModel;
-import com.example.musiclovers.Services.createNotification;
+import com.example.musiclovers.Services.Notification.CreateNotification;
 import com.example.musiclovers.SignInSignUp.SaveSharedPreference;
 import com.example.musiclovers.SignInSignUp.loginActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -77,7 +77,7 @@ import wseemann.media.FFmpegMediaMetadataRetriever;
 public class MainActivity extends AppCompatActivity implements Playable {
     /* Declare */
     String base_Url = "http://10.0.2.2:3000/";
-    public ArrayList<songItem> songList = new ArrayList<>();
+    public ArrayList<Song> songList = new ArrayList<>();
     public MediaPlayer mediaPlayer;
     public Handler handler = new Handler();
     PlaceHolder placeHolder;
@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements Playable {
         });
     }
 
-    public void goToAlbumDetail(songItem songItem) {
+    public void goToAlbumDetail(Song songItem) {
         Call<Album> call1 = placeHolder.getAlbum(songItem.getAlbumId());
         call1.enqueue(new Callback<Album>() {
             @Override
@@ -252,14 +252,14 @@ public class MainActivity extends AppCompatActivity implements Playable {
         });
     }
 
-    public void goToArtistDetail(songItem songItem){
+    public void goToArtistDetail(Song songItem){
         String[] artistId = songItem.getArtistId();
-        Call<artistItem> call = placeHolder.getArtist(artistId[0], SaveSharedPreference.getId(this));
-        call.enqueue(new Callback<artistItem>() {
+        Call<Artist> call = placeHolder.getArtist(artistId[0], SaveSharedPreference.getId(this));
+        call.enqueue(new Callback<Artist>() {
             @Override
-            public void onResponse(@NonNull Call<artistItem> call, @NonNull Response<artistItem> response) {
+            public void onResponse(@NonNull Call<Artist> call, @NonNull Response<Artist> response) {
                 if(response.isSuccessful()){
-                    artistItem artist = response.body();
+                    Artist artist = response.body();
                     ViewModel viewModel = new ViewModelProvider(MainActivity.this).get(ViewModel.class);
                     viewModel.select(artist);
                     getSupportFragmentManager().beginTransaction()
@@ -271,14 +271,14 @@ public class MainActivity extends AppCompatActivity implements Playable {
             }
 
             @Override
-            public void onFailure(@NonNull Call<artistItem> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<Artist> call, @NonNull Throwable t) {
                 Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
 
             }
         });
     }
 
-    public void getSongs(ArrayList<songItem> songItems, int current) {
+    public void getSongs(ArrayList<Song> songItems, int current) {
         songList.clear();
         position = 0;
         for(int i = current; i < songItems.size(); i++){
@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity implements Playable {
         prepareSongAndPlay();
     }
 
-    public void loveMeOrNot(songItem song) {
+    public void loveMeOrNot(Song song) {
         Call<Void> call = placeHolder.likeSong(SaveSharedPreference.getId(this), song.get_id());
         call.enqueue(new Callback<Void>() {
             @Override
@@ -327,24 +327,24 @@ public class MainActivity extends AppCompatActivity implements Playable {
         });
     }
 
-    public void addSongToPlaylist(songItem song){
+    public void addSongToPlaylist(Song song){
 
         Dialog dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_playlists);
         ListView listView = dialog.findViewById(R.id.dialog_playlist_ListView);
         //get playlists
-        Call<List<playlistItem>> call = placeHolder.getPlaylistByUser_PlaylistNum(SaveSharedPreference.getId(this), 2);
-        call.enqueue(new Callback<List<playlistItem>>() {
+        Call<List<Playlist>> call = placeHolder.getPlaylistByUser_PlaylistNum(SaveSharedPreference.getId(this), 2);
+        call.enqueue(new Callback<List<Playlist>>() {
             @Override
-            public void onResponse(Call<List<playlistItem>> call, Response<List<playlistItem>> response) {
+            public void onResponse(Call<List<Playlist>> call, Response<List<Playlist>> response) {
                 if(response.isSuccessful()){
-                    ArrayList<playlistItem> playlistItems = (ArrayList<playlistItem>) response.body();
+                    ArrayList<Playlist> playlistItems = (ArrayList<Playlist>) response.body();
                     if(playlistItems.isEmpty()){
                         Toast.makeText(MainActivity.this, "No playlist to add !! \n Please create a playlist first", Toast.LENGTH_LONG).show();
                         dialog.dismiss();
                         return;
                     }
-                    playlistAdapter adapter = new playlistAdapter(
+                    PlaylistAdapter adapter = new PlaylistAdapter(
                             R.layout.playlist_format,
                             R.id.playlist_format_Name,
                             R.id.playlist_format_NumSongs,
@@ -383,7 +383,7 @@ public class MainActivity extends AppCompatActivity implements Playable {
             }
 
             @Override
-            public void onFailure(Call<List<playlistItem>> call, Throwable t) {
+            public void onFailure(Call<List<Playlist>> call, Throwable t) {
                 Toast.makeText(MainActivity.this, "Sorry \n Something went wrong", Toast.LENGTH_LONG).show();
             }
         });
@@ -453,7 +453,7 @@ public class MainActivity extends AppCompatActivity implements Playable {
     }
 
     private void prepareSongAndPlay() {
-        songItem song = songList.get(position);
+        Song song = songList.get(position);
         song_tab_SongName.setText(song.getSongName() + " - " + song.getArtistName());
         song_tab_SongName.setSelected(true);
         updateFragmentPlayMusic.updateBtnPlay(R.drawable.ic_pause);
@@ -497,7 +497,7 @@ public class MainActivity extends AppCompatActivity implements Playable {
 
         timerSetting();
         updateSongSeekBar();
-        new createNotification(this,
+        new CreateNotification(this,
                 songList.get(position).getSongName(),
                 songList.get(position).getArtistName(),
                 R.drawable.ic_pause,
@@ -531,7 +531,7 @@ public class MainActivity extends AppCompatActivity implements Playable {
         handler.removeCallbacks(update);
         updateFragmentPlayMusic.updateSongProgress(0);
         updateFragmentPlayMusic.updateSongStart(new SimpleDateFormat("mm:ss").format(0));
-        new createNotification(this,
+        new CreateNotification(this,
                 songList.get(position).getSongName(),
                 songList.get(position).getArtistName(),
                 R.drawable.ic_play_music,
@@ -560,8 +560,8 @@ public class MainActivity extends AppCompatActivity implements Playable {
         registerReceiver(broadcastReceiver, new IntentFilter("TRACKS_TRACKS"));
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationChannel channel = new NotificationChannel(
-                    createNotification.CHANNEL_ID_1,
-                    createNotification.CHANNEL_NAME_1,
+                    CreateNotification.CHANNEL_ID_1,
+                    CreateNotification.CHANNEL_NAME_1,
                     NotificationManager.IMPORTANCE_LOW
             );
             channel.setLockscreenVisibility(android.app.Notification.VISIBILITY_PRIVATE);
@@ -626,20 +626,20 @@ public class MainActivity extends AppCompatActivity implements Playable {
             String action = intent.getExtras().getString("actionname");
 
             switch (action) {
-                case createNotification.ACTION_PREVIOUS:
+                case CreateNotification.ACTION_PREVIOUS:
                     onSongPrevious();
                     break;
-                case createNotification.ACTION_PLAY:
+                case CreateNotification.ACTION_PLAY:
                     if (mediaPlayer.isPlaying()) {
                         onSongPause();
                     } else {
                         onSongPlay();
                     }
                     break;
-                case createNotification.ACTION_NEXT:
+                case CreateNotification.ACTION_NEXT:
                     onSongNext();
                     break;
-                case createNotification.ACTION_LIKE:
+                case CreateNotification.ACTION_LIKE:
                     onLikeSong();
                     break;
             }
@@ -667,7 +667,7 @@ public class MainActivity extends AppCompatActivity implements Playable {
         updateSongSeekBar();
         song_tab_btnPause_Start.setImageResource(R.drawable.ic_pause);
         updateFragmentPlayMusic.updateBtnPlay(R.drawable.ic_pause);
-        new createNotification(MainActivity.this,
+        new CreateNotification(MainActivity.this,
                 songList.get(position).getSongName(),
                 songList.get(position).getArtistName(),
                 R.drawable.ic_pause, /* switch to pause */
@@ -684,7 +684,7 @@ public class MainActivity extends AppCompatActivity implements Playable {
             mediaPlayer.pause();
             song_tab_btnPause_Start.setImageResource(R.drawable.ic_play_music);
             updateFragmentPlayMusic.updateBtnPlay(R.drawable.ic_play_music);
-            new createNotification(MainActivity.this,
+            new CreateNotification(MainActivity.this,
                     songList.get(position).getSongName(),
                     songList.get(position).getArtistName(),
                     R.drawable.ic_play_music,
@@ -757,8 +757,8 @@ public class MainActivity extends AppCompatActivity implements Playable {
     }
 
     public interface UpdateFragmentPlayingNext{
-        void initDisplayNextSongsList(ArrayList<songItem> songsList, int position);
-        void updateDisplayNextSongsList(Boolean isNext, Boolean isPrevious, songItem song);
+        void initDisplayNextSongsList(ArrayList<Song> songsList, int position);
+        void updateDisplayNextSongsList(Boolean isNext, Boolean isPrevious, Song song);
     }
 
     public interface UpdateFragmentLyrics{

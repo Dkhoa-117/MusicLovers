@@ -12,7 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.musiclovers.Services.PlaceHolder;
 import com.example.musiclovers.R;
-import com.example.musiclovers.Models.userItem;
+import com.example.musiclovers.Models.User;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,10 +51,10 @@ public class createNewAccount extends AppCompatActivity {
                 String emailAddress = createAccountEmail.getText().toString();
                 String password = createAccountPassword.getText().toString();
                 if(!userName.isEmpty() && !emailAddress.isEmpty() && !password.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(emailAddress).matches()){
-                    Call<userItem> call = placeHolder.register(userName, emailAddress, password);
-                    call.enqueue(new Callback<userItem>() {
+                    Call<User> call = placeHolder.register(userName, emailAddress, password);
+                    call.enqueue(new Callback<User>() {
                         @Override
-                        public void onResponse(Call<userItem> call, Response<userItem> response) {
+                        public void onResponse(Call<User> call, Response<User> response) {
                             if(!response.isSuccessful()) {
                                 Toast.makeText(createNewAccount.this, response.code() + ": " + response.message(), Toast.LENGTH_SHORT).show();
                                 return;
@@ -64,7 +64,7 @@ public class createNewAccount extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onFailure(Call<userItem> call, Throwable t) {
+                        public void onFailure(Call<User> call, Throwable t) {
                             Toast.makeText(createNewAccount.this, "\nSomething went wrong! 😢 \n Please try again! \n", Toast.LENGTH_SHORT).show();
                         }
                     });
