@@ -2,7 +2,7 @@
 An Android Application for those who love music. 
 
 Features:
-* Listen to Music (of course)
+* Listen to Music Online & Offline(of course)
 * Album
 * Artist
 * Karaoke Lyrics
